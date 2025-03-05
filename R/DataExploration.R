@@ -51,6 +51,8 @@ plot_explore <- function(data, response, continuous_vars = NULL, categorical_var
   if (!is.null(categorical_vars)) {
     categorical_vars <- categorical_vars[categorical_vars %in% valid_vars]  # Ensure categorical_vars are valid
     for (var in categorical_vars) {
+      # Check if the variable is factor/character, and if not, convert it to factor
+      data_clean[[var]] <- as.factor(data_clean[[var]])  # Convert categorical variable to factor
       p <- ggplot(data_clean, aes_string(x = var, y = response)) +
         geom_boxplot(fill = "lightblue", color = "black") +
         labs(title = paste(response, "by", var),
