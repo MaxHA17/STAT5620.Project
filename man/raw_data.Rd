@@ -8,7 +8,7 @@
 A data frame with 80 rows and 18 variables:
 }
 \source{
-Data from the Department of Fisheries and Oceans Canada grey usethis::use_data(raw_data, overwirte=TRUE)seal program
+Data from the Department of Fisheries and Oceans Canada grey seal program
 }
 \usage{
 raw_data
@@ -20,18 +20,18 @@ The RawData file contains all of the raw diet and reproductive success data to b
 \itemize{
 \item \strong{MomID}: Unique identifier for the mother.
 \item \strong{Year}: Deployment year.
-\item \strong{Dietary_energy_density}: Energy density (kJ/g) of the female diet calculated from the average energy content per gram of prey body tissue.
+\item \strong{Dietary.energy.density}: Energy density (kJ/g) of the female diet calculated from the average energy content per gram of prey body tissue.
 \item \strong{Diet.diversity}: Standardized Shannon-Weaver diversity index to quantify individual diet diversity.
-\item \strong{Dominant_prey_species}: The prey species making up the greatest proportion of the mothers diet.
+\item \strong{Dominant.prey.species}: The prey species making up the greatest proportion of the mothers diet.
 \item \strong{Mom.Age}: Age of the mother in years.
 \item \strong{Deploy.Mass}: The mothers mass (in kg) at initial deployment before the foraging period.
 \item \strong{Recover.Mass}: The mass of the mother (in kg) when she returns to the breeding colony to give birth to her pup.
 \item \strong{Mass.change}: The mothers recovery mass minus her deployment mass.
-\item \strong{Pup.age.at.mom.mass.measurement}: If known, the age of the pup (in days) when the mother was found and samples with her pup.
+\item \strong{Pup.age.at.Mom.Mass.Measurement}: If known, the age of the pup (in days) when the mother was found and samples with her pup.
 \item \strong{PupID}: Unique identifier for the individual pup.
 \item \strong{Pup.sex}: A binary character representing the sex of male (1) or female (2) pups.
-\item \strong{Pup.birth.Date}: If known, the date the pup was born.
-\item \strong{Pup.birth..Mass}: The mass (in kg) of the pup at birth.
+\item \strong{Pup.Birth.date}: If known, the date the pup was born.
+\item \strong{Pup.birth.mass}: The mass (in kg) of the pup at birth.
 \item \strong{Pup.Age.at.Weaning}: The age (in days) of the pup when the mother terminated lactation and the pup was weaned.
 \item \strong{Pup.Wean.Mass.date}: The date the pup was weaned.
 \item \strong{Pup.Wean.Mass}: The mass (in kg) of the pup at weaning.
