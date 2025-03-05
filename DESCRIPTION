@@ -1,0 +1,13 @@
+Package: STAT5620.Project
+Title: R Package for group 7's STAT5620 project
+Version: 0.0.0.9000
+Authors@R: 
+Max, Henry-adams, max.henry-adams@dal.ca, role=cre
+Peter, Braithwaite, peter@pbstudio.ca, role=aut
+
+Description: What the package does (one paragraph).
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
