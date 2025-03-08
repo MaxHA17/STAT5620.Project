@@ -552,3 +552,6 @@ summary (M_total)
 ## Travel speed and total migration duration are inversely relational bird size up to 50g weight
 # and 70cm wingspan. Birds larger than these dimension show no corrolation between body size and
 # migratory speed or duration.
+
+
+fhdlsahkfldhlasd
