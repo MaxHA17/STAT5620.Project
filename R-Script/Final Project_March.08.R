@@ -17,30 +17,60 @@ seal_data
 
 # Plot varibles to see distributions of predictor and response variables
 require(flexplot)
-data = cystfibr
+# data = seal_data
+# variables names( seal_data)
+#[1] "MomID"                  "Year"                   "Dietary.energy.density" "Diet.diversity"
+[5] "Dominant.prey.species"  "Mass.change"
 
-a = flexplot (age~1, data=cystfibr)
-b = flexplot (sex~1, data=cystfibr)
-c = flexplot (height~1, data=cystfibr)
-d = flexplot (weight~1, data=cystfibr)
-e = flexplot (bmp~1, data=cystfibr)
-f = flexplot (fev1~1, data=cystfibr)
-g = flexplot (rv~1, data=cystfibr)
-h = flexplot (frc~1, data=cystfibr)
-i = flexplot (tlc~1, data=cystfibr)
-j = flexplot (pemax~1, data=cystfibr)
+a = flexplot (MomID~1, data= seal_data)
+b = flexplot (Year~1, data= seal_data)
+c = flexplot (Dietary.energy.density~1, data= seal_data)
+d = flexplot (Diet.diversity~1, data= seal_data)
+e = flexplot (Dominant.prey.species~1, data= seal_data)
+f = flexplot (Mass.change~1, data= seal_data)
+
 
 require (cowplot)
-plot_grid(a,b,c,d,e,f,g,h,i,j)
+plot_grid(a,b,c,d,e,f)
 
 
+##Explore the data with plots (One Predictor vs. Response )
 
+# Mass Change + Dietary.energy.density
+ggplot(seal_data) + geom_point(aes(seal_data$Dietary.energy.density, seal_data$Mass.change, color = seal_data$MomID)) +
+  labs(title = "Mass Change and Dietary Energy Density", x = "Dietary Energy Density (kJ/g of prey tissue)", y = "Mass Change (Kg)") +
+  geom_smooth(aes(seal_data$Dietary.energy.density, seal_data$Mass.change), method="lm", se=F)
 
+# Mass Change + Diet Diveristy
+ggplot(seal_data) + geom_point(aes(seal_data$Diet.diversity, seal_data$Mass.change, color = seal_data$MomID)) +
+  labs(title = "Mass Change and Diet Diversity", x = "Diet Diveristy (no specific units for Shannon index)", y = "Mass Change (Kg)") +
+  geom_smooth(aes(seal_data$Diet.diversity, seal_data$Mass.change), method="lm", se=F)
 
+# Mass Change + Year
+ggplot(seal_data) + geom_point(aes(seal_data$Year, seal_data$Mass.change, color = seal_data$MomID)) +
+  labs(title = "Mass Change and Year", x = "Year", y = "Mass Change (Kg)") +
+  geom_smooth(aes(seal_data$Year, seal_data$Mass.change), method="lm", se=F)
+
+# Mass Change + MomID
+ggplot(seal_data) + geom_point(aes(seal_data$MomID, seal_data$Mass.change)) +
+  labs(title = "Mass Change and Mom ID", x = "Mom ID", y = "Mass Change (Kg)")
+geom_smooth(aes(seal_data$MomID, seal_data$Mass.change), method="lm", se=F)
+
+# Mass Change + Dominant Prey Species
+ggplot(seal_data) + geom_point(aes(seal_data$Dominant.prey.species, seal_data$Mass.change)) +
+  labs(title = "Mass Change and Dominant Prey Species", x = "Dominant Prey Species", y = "Mass Change (Kg)")
+geom_smooth(aes(seal_data$Dominant.prey.species, seal_data$Mass.change), method="lm", se=F)
 
 
 
 ###### Fit Linear Model (all predictor variables)
+
+## convert catagorical data to factors
+
+seal_data$MomID = as.factor(seal_data$MomID)
+seal_data$Year = as.factor(seal_data$Year)
+seal_data$Dominant.prey.species = as.factor(seal_data$Dominant.prey.species)
+
 
 Q1 = lm(seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
         + seal_data$Year + seal_data$MomID,
@@ -48,17 +78,89 @@ Q1 = lm(seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet
 
 summary(Q1)
 
+# p-value: 1.006e-06
+# Adjusted R-squared - 0.5174
+plot(Q1)
+
+
+###### Fit Generalized Linear Model (all predictor variables)
+
+Gaus = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+            + seal_data$Year + seal_data$MomID, data = seal_data, family = gaussian)
+
+summary (Gaus)
+#AIC = 684.76
+
+plot (Gaus)
+
+## Before we step the models and reduce predictor variabvles lets compair the plots
+## of the linear model and the GLM
+
+compare.plot
 
 
 
 
-# Fit Linear Model (all predictor variables - dominant.prey.species)
 
-Q1_2 = lm(seal_data$Mass.change ~ seal_data$Diet.diversity + seal_data$Dietary.energy.density
-        + seal_data$Year + seal_data$MomID,
-        data = seal_data)
+#Step Function
 
-summary (Q1_2)
+fwd.model = step(Gaus, direction='forward')
+backward.model = step(Gaus, direction='backward')
+
+### step backward found that the best model only included 3 predictor variables
+# and has a AIC = 683.07
+
+## seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
+## seal_data$Year
+
+Q1_A = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
+              + seal_data$Year, data = seal_data, family = gaussian)
+
+summary (Q1_A)
+
+## AIC = 683.07
+
+plot (Q1_A)
+
+### Fit a GLMM
+
+library(lme4)
+
+Gaus_mixed_full_1 = glmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
+                            (1 | Year) + (1 | MomID), data = seal_data, family = gaussian)
+
+Gaus_mixed_full_2 = glmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
+                            (1 | Year), data = seal_data, family = gaussian)
+
+
+summary (Gaus_mixed_full_2)
+
+summary (Gaus_mixed_full_1)
+
+# Comparing GLMM's
+model.comparison(Gaus_mixed_full_1, Gaus_mixed_full_2 )
+# Gaus_mixed_full_2 is better model AIC = 649.36
+
+# Comparing best LM to best GLM (Gaussian)
+model.comparison(Q1, Q1_A)
+# Q1_A (GLM) is a better model AIC = 683.07
+
+# Comparing best GGLM and GLM
+model.comparison(Q1_A, Gaus_mixed_full_2 )
+# Gaus_mixed_full_2 is better model AIC = 649.36
+
+Gaus_mixed_full_2 = glmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
+                            (1 | Year), data = seal_data, family = gaussian)
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -124,69 +226,7 @@ abs(cor(Q1[c(1:5)]))
 
 
 
-##Explore the data with plots
 
-# Mass Change + Dietary.energy.density
-ggplot(seal_data) + geom_point(aes(seal_data$Mass.change, seal_data$Dietary.energy.density, color = seal_data$MomID)) +
-labs(title = "Mass Change and Dietary Energy Density", x = "Mass Change", y = "Dietary Energy Density") +
-geom_smooth(aes(seal_data$Mass.change, seal_data$Dietary.energy.density), method="lm", se=F)
-
-# Mass Change + Diet Diveristy
-ggplot(seal_data) + geom_point(aes(seal_data$Mass.change, seal_data$Diet.diversity, color = seal_data$MomID)) +
-labs(title = "Mass Change and Diet Diversity", x = "Mass Change", y = "Diet Diversity ") +
-geom_smooth(aes(seal_data$Mass.change, seal_data$Diet.diversity), method="lm", se=F)
-
-# Mass Change + Year
-ggplot(seal_data) + geom_point(aes(seal_data$Mass.change, seal_data$Year, color = seal_data$MomID)) +
-labs(title = "Mass Change and Year", x = "Mass Change",
-     y = "Year")
-
-# Mass Change + MomID
-ggplot(seal_data) + geom_point(aes(seal_data$Mass.change, seal_data$MomID)) +
-  geom_smooth(aes(seal_data$Mass.change, seal_data$MomID), method="lm", se=F)
-
-
-
-seal_data$MomID = as.factor(seal_data$MomID)
-
-# Mom ID and Diet Diveristy
-ggplot(seal_data) + geom_point(aes(seal_data$MomID, seal_data$Diet.diversity, color = seal_data$MomID)) +
-  labs(title = "Mother ID and Diet Diversity", x = "Mother ID",
-       y = "Diet Diversity")
-
-# Mom ID and Dietary Engery Density
-ggplot(seal_data) + geom_point(aes(MomID,Dietary.energy.density, color = seal_data$MomID)) +
-  labs(title = "Mother ID and Dietary Energy Density", x = "Mother ID",
-    y = "Dietary Energy Density")
-
-
-
-###### Exploring Data and Distribution of Each Variale (Predictor and Response )
-
-
-# Plot varibles to see distributions of predictor and response variables
-require(flexplot)
-data = cystfibr
-
-a = flexplot (age~1, data=cystfibr)
-b = flexplot (sex~1, data=cystfibr)
-c = flexplot (height~1, data=cystfibr)
-d = flexplot (weight~1, data=cystfibr)
-e = flexplot (bmp~1, data=cystfibr)
-f = flexplot (fev1~1, data=cystfibr)
-g = flexplot (rv~1, data=cystfibr)
-h = flexplot (frc~1, data=cystfibr)
-i = flexplot (tlc~1, data=cystfibr)
-j = flexplot (pemax~1, data=cystfibr)
-
-require (cowplot)
-plot_grid(a,b,c,d,e,f,g,h,i,j)
-
-
-
-KKKK FF
-
-
-
+Hllo
 
 
