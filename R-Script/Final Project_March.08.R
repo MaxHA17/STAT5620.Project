@@ -63,7 +63,7 @@ geom_smooth(aes(seal_data$Dominant.prey.species, seal_data$Mass.change), method=
 
 
 
-###### Fit Linear Model (all predictor variables)
+###############.    Fit Linear Model (all predictor variables)
 
 ## convert catagorical data to factors
 
@@ -82,36 +82,70 @@ summary(Q1)
 # Adjusted R-squared - 0.5174
 plot(Q1)
 
+### Conclusions that the most significant variables are prey species Capelin and Pollock as well as the year 2005. This shows the
+### importance of the mixed model (GLMM)
 
-###### Fit Generalized Linear Model (all predictor variables)
+### show graphs MC vs. DED (single variables) and Dominant prey species
 
-Gaus = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
-            + seal_data$Year + seal_data$MomID, data = seal_data, family = gaussian)
+### This leads us to look into dominant prey species each year. I will now create this graph
 
-summary (Gaus)
+
+# Mass Change + Dominant Prey Species
+ggplot(seal_data) + geom_point(aes(seal_data$Year, seal_data$Dominant.prey.species)) +
+  labs(title = "Year and Dominant Prey Species", x = "Year", y = "Dominant Prey Species")
+
+
+
+a1 = flexplot (Dominant.prey.species ~ Year, data=seal_data, method ="gaussian", se=T)
+
+
+#Step Function
+
+fwd.model = step (Q1, direction='forward')
+backward.model = step(Gaus, direction='backward')
+
+### Backward found best model included (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
+### seal_data$Year) to be the best model with AIC = 603.07
+
+# We will now run this linear model with the data
+
+Q1 = lm(seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Year,
+        data = seal_data)
+
+summary(Q1)
+
+# We find that a p-value =  4.625e-07 with a Ajusted R-square of 0.5241 ( 52% of variance explained by model )
+
+### Again conclusions show that the most significant variables are prey species Capelin and Pollock as well as the year 2005. This shows the
+### importance of the mixed model (GLMM)
+
+
+###################  Fit Generalized Linear Model (all predictor variables)
+
+Q1_A = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+            + seal_data$Year , data = seal_data, family = gaussian)
+
+summary (Q1_A)
 #AIC = 684.76
 
-plot (Gaus)
 
-## Before we step the models and reduce predictor variabvles lets compair the plots
+## Before we use the step function on models and reduce predictor variables lets compare the plots
 ## of the linear model and the GLM
-
-compare.plot
-
-
 
 
 
 #Step Function
 
-fwd.model = step(Gaus, direction='forward')
-backward.model = step(Gaus, direction='backward')
+fwd.model = step(Q1_A, direction='forward')
+backward.model = step(Q1_A, direction='backward')
 
 ### step backward found that the best model only included 3 predictor variables
-# and has a AIC = 683.07
+# and has a AIC = 683.07 (the same predictor variables as the linear model Q1)
 
 ## seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
 ## seal_data$Year
+
+# We now run this Gernalized Linear Model (GLM) with a Gaussian family
 
 Q1_A = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
               + seal_data$Year, data = seal_data, family = gaussian)
@@ -122,7 +156,19 @@ summary (Q1_A)
 
 plot (Q1_A)
 
-### Fit a GLMM
+
+### Again conclusions show that the most significant variables are prey species Capelin and Pollock as well as the year 2005. This shows the
+### importance of the mixed model (GLMM)
+
+### Interesting because 2 low level dominance prey species being present are the most
+# important factors determining change in mass
+
+###### What does this mean?
+
+
+
+
+#########################.   Fit a GLMM
 
 library(lme4)
 
@@ -227,6 +273,6 @@ abs(cor(Q1[c(1:5)]))
 
 
 
-Hllo
+
 
 
