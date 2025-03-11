@@ -72,15 +72,60 @@ seal_data$Year = as.factor(seal_data$Year)
 seal_data$Dominant.prey.species = as.factor(seal_data$Dominant.prey.species)
 
 
+### all three factor variables in model found infinite model so mother ID factor was removed
+
 Q1 = lm(seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
-        + seal_data$Year + seal_data$MomID,
-        data = seal_data)
+        + seal_data$Year, data = seal_data)
 
 summary(Q1)
 
 # p-value: 1.006e-06
 # Adjusted R-squared - 0.5174
 plot(Q1)
+
+
+### all three factor variables in model found infinite model so year factor was removed
+
+Q2 = lm(seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+        + seal_data$MomID, data = seal_data)
+
+summary (Q2)
+
+# p-value: 0.2608
+# Adjusted R-squared - 0.4349
+plot(Q2)
+
+
+### all three factor variavles in model found infinite model so Dominant.prey.species factor was removed
+
+Q3 = lm(seal_data$Mass.change ~  seal_data$Diet.diversity + seal_data$Dietary.energy.density
+             + seal_data$MomID + seal_data$Year, data = seal_data)
+
+summary (Q3)
+
+### model doesn't work
+### Fouind Year and Mom ID can't be in same model
+### Year creates a higher Adjusted R-square and much more significant p-value so Q1 is best linear model.
+
+
+
+#Step Function
+
+fwd.model = step (Q1, direction='forward')
+backward.model = step(Q1, direction='backward')
+
+### Backward found best model included (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
+### seal_data$Year) to be the best model with AIC = 465.39
+
+# We will now run this linear model with the data
+
+Q1_Reduced = lm(seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Year,
+        data = seal_data)
+
+summary(Q1_Reduced)
+
+# We find that a p-value =  4.625e-07 with a Adjusted R-square of 0.5241 (52 % of variance explained by model)
+
 
 ### Conclusions that the most significant variables are prey species Capelin and Pollock as well as the year 2005. This shows the
 ### importance of the mixed model (GLMM)
@@ -91,30 +136,15 @@ plot(Q1)
 
 
 # Mass Change + Dominant Prey Species
+
+require(ggplot2)
+
 ggplot(seal_data) + geom_point(aes(seal_data$Year, seal_data$Dominant.prey.species)) +
   labs(title = "Year and Dominant Prey Species", x = "Year", y = "Dominant Prey Species")
 
-
-
 a1 = flexplot (Dominant.prey.species ~ Year, data=seal_data, method ="gaussian", se=T)
+a1
 
-
-#Step Function
-
-fwd.model = step (Q1, direction='forward')
-backward.model = step(Gaus, direction='backward')
-
-### Backward found best model included (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
-### seal_data$Year) to be the best model with AIC = 603.07
-
-# We will now run this linear model with the data
-
-Q1 = lm(seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Year,
-        data = seal_data)
-
-summary(Q1)
-
-# We find that a p-value =  4.625e-07 with a Ajusted R-square of 0.5241 ( 52% of variance explained by model )
 
 ### Again conclusions show that the most significant variables are prey species Capelin and Pollock as well as the year 2005. This shows the
 ### importance of the mixed model (GLMM)
@@ -122,49 +152,49 @@ summary(Q1)
 
 ###################  Fit Generalized Linear Model (all predictor variables)
 
-Q1_A = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
-            + seal_data$Year , data = seal_data, family = gaussian)
+Q1A = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+            + seal_data$Year + seal_data$MomID, data = seal_data, family = gaussian)
 
-summary (Q1_A)
+
+# model doesn't work (note year and MomID in same model doesn't work)
+
+
+# remove Mom ID
+Q1A_A = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+            + seal_data$Year , data = seal_data, family = gaussian)
+summary (Q1A_A)
 #AIC = 684.76
 
+#remove Year
 
-## Before we use the step function on models and reduce predictor variables lets compare the plots
-## of the linear model and the GLM
+Q1A_B = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+           + seal_data$MomID, data = seal_data, family = gaussian)
+
+summary (Q1A_B)
+#AIC = 614.52
+
+
+
+### With this GLM the Mom ID is better to keep in and remove the Year
 
 
 
 #Step Function
 
-fwd.model = step(Q1_A, direction='forward')
-backward.model = step(Q1_A, direction='backward')
+fwd.model = step(Q1A_B, direction='forward')
+backward.model = step(Q1A_B, direction='backward')
 
 ### step backward found that the best model only included 3 predictor variables
-# and has a AIC = 683.07 (the same predictor variables as the linear model Q1)
+# and has a AIC = 610.54 for the variables seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$MomID
 
-## seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
-## seal_data$Year
 
 # We now run this Gernalized Linear Model (GLM) with a Gaussian family
 
-Q1_A = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
-              + seal_data$Year, data = seal_data, family = gaussian)
+Q1A_C = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$MomID, family = gaussian)
 
-summary (Q1_A)
+summary (Q1A_C)
 
-## AIC = 683.07
-
-plot (Q1_A)
-
-
-### Again conclusions show that the most significant variables are prey species Capelin and Pollock as well as the year 2005. This shows the
-### importance of the mixed model (GLMM)
-
-### Interesting because 2 low level dominance prey species being present are the most
-# important factors determining change in mass
-
-###### What does this mean?
-
+## AIC = 610.54
 
 
 
