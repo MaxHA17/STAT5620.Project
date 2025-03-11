@@ -249,6 +249,12 @@ model.comparison(lmm_2, lmm_3 )
 # lmm_2 is a much better model AIC = 649.36
 
 
+step (lmm_1, direction = backwards)
+
+
+library(lmerTest)
+
+
 
 
 
@@ -276,6 +282,16 @@ Gaus_mixed_full_2 = glmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
 Q1A_C = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$MomID, family = gaussian)
 summary (Q1A_C)
 ## AIC = 610.54
+
+
+
+glmm_4 = glmer(seal_data$Mass.change ~ seal_data$Dominant.prey.species + (1 | seal_data$MomID), family = gaussian)
+
+model.comparison(glmm_4, Q1A_C )
+
+## Q1A_C still the best model
+
+
 
 
 
