@@ -202,34 +202,80 @@ summary (Q1A_C)
 
 library(lme4)
 
-Gaus_mixed_full_1 = glmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
+glmm_1 = glmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
                             (1 | Year) + (1 | MomID), data = seal_data, family = gaussian)
 
-Gaus_mixed_full_2 = glmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
+
+glmm_2 = glmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
                             (1 | Year), data = seal_data, family = gaussian)
 
 
-summary (Gaus_mixed_full_2)
+glmm_3 = glmer(Mass.change ~ (1 | Dominant.prey.species) + Diet.diversity +
+                (1 | Year), data = seal_data, family = gaussian)
 
-summary (Gaus_mixed_full_1)
 
 # Comparing GLMM's
-model.comparison(Gaus_mixed_full_1, Gaus_mixed_full_2 )
-# Gaus_mixed_full_2 is better model AIC = 649.36
+model.comparison(glmm_1, glmm_2 )
+# lmm_2 is better model AIC = 649.36
+
+
+# Comparing GLMM's
+model.comparison(glmm_2, glmm_3 )
+# lmm_2 is a much better model AIC = 649.36
+
+
+
+
+lmm_1 = lmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
+                (1 | Year) + (1 | MomID), data = seal_data
+
+
+lmm_2 = lmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
+                (1 | Year), data = seal_data)
+
+
+lmm_3 = lmer(Mass.change ~ (1 | Dominant.prey.species) + Diet.diversity +
+                (1 | Year), data = seal_data)
+
+
+
+# Comparing GLMM's
+model.comparison(lmm_1, lmm_2 )
+# lmm_2 is better model AIC = 649.36
+
+
+# Comparing GLMM's
+model.comparison(lmm_2, lmm_3 )
+# lmm_2 is a much better model AIC = 649.36
+
+
+
+
 
 # Comparing best LM to best GLM (Gaussian)
-model.comparison(Q1, Q1_A)
-# Q1_A (GLM) is a better model AIC = 683.07
+model.comparison(Q1_Reduced, Q1A_C)
+# Best Linear Model (Q1_Reducted) AIC = 683.1 and Best Generalized Linear Model (Q1A_C) AIC = 610.54
+# Generalized Linear Model best with AIC = 610.54
 
-# Comparing best GGLM and GLM
-model.comparison(Q1_A, Gaus_mixed_full_2 )
-# Gaus_mixed_full_2 is better model AIC = 649.36
+# Comparing best GLMM and GLM
+model.comparison(lmm_2, Q1A_C )
+
+# Best Model is the Generalized Linear Model not the GLMM
 
 Gaus_mixed_full_2 = glmer(Mass.change ~ Dominant.prey.species + Diet.diversity +
                             (1 | Year), data = seal_data, family = gaussian)
 
 
 
+
+
+
+
+#### This is best model
+
+Q1A_C = glm (seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$MomID, family = gaussian)
+summary (Q1A_C)
+## AIC = 610.54
 
 
 
