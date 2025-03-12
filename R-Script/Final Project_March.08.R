@@ -72,7 +72,7 @@ seal_data$Year = as.factor(seal_data$Year)
 seal_data$Dominant.prey.species = as.factor(seal_data$Dominant.prey.species)
 
 
-### all three factor variables in model found infinite model so mother ID factor was removed
+### all three factor variables in model found infinite model so "mother ID" factor was removed
 
 Q1 = lm(seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
         + seal_data$Year, data = seal_data)
@@ -84,7 +84,7 @@ summary(Q1)
 plot(Q1)
 
 
-### all three factor variables in model found infinite model so year factor was removed
+### all three factor variables in model found infinite model so "year" factor was removed
 
 Q2 = lm(seal_data$Mass.change ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
         + seal_data$MomID, data = seal_data)
@@ -96,7 +96,7 @@ summary (Q2)
 plot(Q2)
 
 
-### all three factor variavles in model found infinite model so Dominant.prey.species factor was removed
+### all three factor variavles in model found infinite model so "Dominant.prey.species" factor was removed
 
 Q3 = lm(seal_data$Mass.change ~  seal_data$Diet.diversity + seal_data$Dietary.energy.density
              + seal_data$MomID + seal_data$Year, data = seal_data)
@@ -106,6 +106,36 @@ summary (Q3)
 ### model doesn't work
 ### Fouind Year and Mom ID can't be in same model
 ### Year creates a higher Adjusted R-square and much more significant p-value so Q1 is best linear model.
+
+
+
+
+## Check for correlation of numeric data
+
+# Graphically look at corrolation
+
+pairs( ~Diet.diversity + Dietary.energy.density, data = seal_data)
+
+# numerically inspect the data by plotting with paris to inpect
+# for collinearity
+
+cor.test( ~Diet.diversity + Dietary.energy.density, data = seal_data)
+
+
+## 	Pearson's product-moment correlation
+
+# data:  Diet.diversity and Dietary.energy.density
+# t = -0.35989, df = 74, p-value = 0.72
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#   -0.2647605  0.1854027
+# sample estimates:
+#   cor
+# -0.0418001
+
+
+# Not significant p-value so not correlated variables
+
 
 
 
@@ -364,7 +394,6 @@ abs(cor(Q1[c(1:5)]))
 
 
 
-kkk
 
 
 
