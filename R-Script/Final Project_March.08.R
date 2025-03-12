@@ -12,6 +12,12 @@ seal_data
 
 
 
+## Maternal mass change ~ dominant prey species + dietary energy density + diet diversity +
+## maternal ID (random effect to account for repeated measures of some females) +
+## year (to account for changes in prey availability/fluctuation)
+
+
+
 ###### Exploring Data and Distribution of Each Variale (Predictor and Response )
 
 
@@ -391,6 +397,151 @@ abs(cor(Q1[c(1:5)]))
 # Mean.Wingspan..cm.   0.02690382   0.02228644
 # Autumn.value         1.00000000   0.97783319
 # Spring.value         0.97783319   1.00000000
+
+
+
+
+
+
+
+######################## Question Two
+
+
+
+## Pup weaning mass ~ dominant prey species + dietary energy density + diet
+## diversity + maternal ID (random effect to account for repeated measures of some females) + pup
+## sex (include to account for sex difference in mass) + maternal age (include as quadratic effect to
+## account for reproductive senescence)
+
+
+###### Exploring Data and Distribution of Each Variale (Predictor and Response )
+
+
+# Clear Workspace
+rm(list=ls())
+
+# Load Data
+seal_data = read.csv("Data_Q2.csv", header = T)
+summary(seal_data)
+
+seal_data
+
+
+
+# Plot varibles to see distributions of predictor and response variables
+
+require(flexplot)
+
+# data = seal_data
+
+names (seal_data)
+
+[1] "MomID"                  "Year"                   "Dietary.energy.density" "Diet.diversity"
+[5] "Dominant.prey.species"  "Mom.Age"                "Pup.sex"                "Pup.Wean.Mass"
+
+a = flexplot (MomID~1, data= seal_data)
+b = flexplot (Year~1, data= seal_data)
+c = flexplot (Dietary.energy.density~1, data= seal_data)
+d = flexplot (Diet.diversity~1, data= seal_data)
+e = flexplot (Dominant.prey.species~1, data= seal_data)
+f = flexplot (Mom.Age~1, data= seal_data)
+g = flexplot (Pup.sex~1, data= seal_data)
+h = flexplot (Pup.Wean.Mass~1, data= seal_data)
+
+require (cowplot)
+plot_grid(a,b,c,d,e,f,g,h)
+
+
+
+##Explore the data with plots (One Predictor vs. Response )
+
+# Pup Wean Mass + Dietary.energy.density
+ggplot(seal_data) + geom_point(aes(seal_data$Dietary.energy.density, seal_data$Pup.Wean.Mass, color = MomID)) +
+  labs(title = "Pup Wean Mass and Dietary Energy Density", x = "Dietary Energy Density (kJ/g of prey tissue)", y = "Pup Wean Mass (Kg)") +
+  geom_smooth(aes(seal_data$Dietary.energy.density, seal_data$Pup.Wean.Mass), method="lm", se=T)
+
+# Pup Wean Mass + Diet Diveristy
+ggplot(seal_data) + geom_point(aes(seal_data$Diet.diversity, seal_data$Pup.Wean.Mass, color = seal_data$MomID)) +
+  labs(title = "Pup Wean Mass and Diet Diversity", x = "Diet Diveristy (no specific units for Shannon index)", y = "Pup Wean Mass (Kg)") +
+  geom_smooth(aes(seal_data$Diet.diversity, seal_data$Pup.Wean.Mass), method="lm", se=T)
+
+# Pup Wean Mass + Year
+ggplot(seal_data) + geom_point(aes(seal_data$Year, seal_data$Pup.Wean.Mass, color = seal_data$MomID)) +
+  labs(title = "Pup Wean Mass and Year", x = "Year", y = "Pup Wean Mass (Kg)") +
+  geom_smooth(aes(seal_data$Year, seal_data$Pup.Wean.Mass), method="lm", se=T)
+
+# Pup Wean Mass + MomID
+ggplot(seal_data) + geom_point(aes(seal_data$MomID, seal_data$Pup.Wean.Mass)) +
+  labs(title = "Pup Wean Mass and Mom ID", x = "Mom ID", y = "Pup Wean Mass (Kg)") +
+geom_smooth(aes(seal_data$MomID, seal_data$Pup.Wean.Mass), method="lm", se=T)
+
+# Pup Wean Mass + Dominant Prey Species
+ggplot(seal_data) + geom_point(aes(seal_data$Dominant.prey.species, seal_data$Pup.Wean.Mass)) +
+  labs(title = "Pup Wean Mass and Dominant Prey Species", x = "Dominant Prey Species", y = "Pup Wean Mass (Kg)")
+
+# Pup Wean Mass + Pup Sex
+ggplot(seal_data) + geom_point(aes(seal_data$Pup.sex, seal_data$Pup.Wean.Mass)) +
+  labs(title = "Pup Wean Mass and Pup Sex", x = "Pup Sex", y = "Pup Wean Mass (Kg)") +
+  geom_smooth(aes(seal_data$Pup.sex, seal_data$Pup.Wean.Mass), method="lm", se=T)
+
+# Pup Wean Mass + Maternal Age
+ggplot(seal_data) + geom_point(aes(seal_data$Mom.Age, seal_data$Pup.Wean.Mass)) +
+  labs(title = "Pup Wean Mass and Maternal Age", x = "Maternal Age", y = "Pup Wean Mass (Kg)") +
+  geom_smooth(aes(seal_data$Mom.Age, seal_data$Pup.Wean.Mass), method="lm", se=T)
+
+
+
+###############.    Fit Linear Model (all predictor variables)
+
+## convert catagorical data to factors
+
+seal_data$MomID = as.factor(seal_data$MomID)
+seal_data$Year = as.factor(seal_data$Year)
+seal_data$Dominant.prey.species = as.factor(seal_data$Dominant.prey.species)
+seal_data$Pup.sex = as.factor(seal_data$Pup.sex)
+
+
+
+Q1 = lm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+        + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data)
+
+summary(Q1)
+
+### Does not work
+### all four factor variables in model found infinite model so "mother ID" factor was removed below
+
+Q2 = lm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+        + seal_data$Year +  seal_data$Mom.Age + seal_data$Pup.sex , data = seal_data)
+
+summary (Q2)
+
+### Adjusted R-squared:  0.209
+###  p-value: 0.08393
+
+
+### remove "year" variable
+
+Q3 = lm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+        +  seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data)
+
+summary (Q3)
+
+
+### Does not work
+
+### remove "Dominant.prey.species" variable
+
+Q4 = lm(seal_data$Pup.Wean.Mass ~  seal_data$Diet.diversity + seal_data$Dietary.energy.density
+        + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data)
+
+summary (Q4)
+
+### Does not work
+
+###  Best lm is all varialbes except MomID
+
+
+
 
 
 
