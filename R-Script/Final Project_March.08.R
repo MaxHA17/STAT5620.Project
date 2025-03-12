@@ -538,9 +538,90 @@ summary (Q4)
 
 ### Does not work
 
-###  Best lm is all varialbes except MomID
+###  Best lm is all varialbes except MomID so Q2
 
 
+
+#Step Function
+
+fwd.model = step (Q2, direction='forward')
+
+### all varailbles with AIC = 216.76
+
+backward.model = step(Q2, direction='backward')
+
+### dominant.prey.species and diet.diveristy with AIC 202.62
+
+### Backward found best model included (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity)
+# We will now run this linear model with the data
+
+Q1_Reduced = lm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity,
+                data = seal_data)
+
+summary(Q1_Reduced)
+
+# We find that a p-value: 0.00121 with a Adjusted R-squared:  0.2715  (27 % of variance explained by model)
+
+
+### Conclusions that the most significant variables are prey species Pollock and White Hake. This shows the
+### importance of the mixed model (GLMM)
+
+
+
+
+
+###################  Fit Generalized Linear Model (all predictor variables)
+
+Q2A = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+           + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data, family = gaussian)
+
+
+summary (Q2A)
+
+# model doesn't work remove MomID variable
+
+Q2B = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+           + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex, data = seal_data, family = gaussian)
+
+# remove Mom ID
+
+summary (Q2B)
+#AIC = 377.68
+
+#remove Year
+
+Q2C = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+           + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data, family = gaussian)
+
+summary (Q2C)
+
+# Doesn't Work
+
+## So use Q2B model to step
+
+
+
+#Step Function
+
+fwd.model = step(Q2B, direction='forward')
+# all varialves except MomID and AIC = 377.68
+
+backward.model = step(Q2B, direction='backward')
+# only Dominant prey species and Diet Diversity and AIC = 363.54
+
+### step backward found that the best model only included 3 predictor variables
+# and has a AIC = 363.54 for the variables (Seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity)
+
+
+# We now run this Gernalized Linear Model (GLM) with a Gaussian family
+
+Q2D = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = gaussian)
+
+summary (Q2D)
+
+## AIC = 363.54
+
+### Conclustion is Q2D is best model with AIC 363.54 for GLM and Pollock and White Hake are the most significant variables.
 
 
 
