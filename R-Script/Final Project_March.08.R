@@ -691,7 +691,7 @@ summary (Q2H)
 
 
 
-###### Run Generaalized Linear Mixed MOdel
+###### Run Generalized Linear Mixed MOdel
 
 
 
