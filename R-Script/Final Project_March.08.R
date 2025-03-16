@@ -455,6 +455,8 @@ plot_grid(a,b,c,d,e,f,g,h)
 
 ##Explore the data with plots (One Predictor vs. Response )
 
+require(ggplot2)
+
 # Pup Wean Mass + Dietary.energy.density
 ggplot(seal_data) + geom_point(aes(seal_data$Dietary.energy.density, seal_data$Pup.Wean.Mass, color = MomID)) +
   labs(title = "Pup Wean Mass and Dietary Energy Density", x = "Dietary Energy Density (kJ/g of prey tissue)", y = "Pup Wean Mass (Kg)") +
@@ -493,7 +495,7 @@ ggplot(seal_data) + geom_point(aes(seal_data$Mom.Age, seal_data$Pup.Wean.Mass)) 
 
 ###############.    Fit Linear Model (all predictor variables)
 
-## convert catagorical data to factors
+## convert categorical data to factors
 
 seal_data$MomID = as.factor(seal_data$MomID)
 seal_data$Year = as.factor(seal_data$Year)
@@ -508,6 +510,10 @@ Q1 = lm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Di
 summary(Q1)
 
 ### Does not work
+#### meaning more columns than rows, meaning in turn more variables than observations, which directly leads to the NaN on 0 degrees of freedom.
+### too many variales and not enough data
+### need to remove some factors so try each one to see which model is better
+
 ### all four factor variables in model found infinite model so "mother ID" factor was removed below
 
 Q2 = lm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
@@ -538,7 +544,7 @@ summary (Q4)
 
 ### Does not work
 
-###  Best lm is all varialbes except MomID so Q2
+###  Best lm is all varialbes except MomID so Q2 model above
 
 
 
@@ -578,51 +584,114 @@ Q2A = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data
 
 summary (Q2A)
 
-# model doesn't work remove MomID variable
+
+### NOTE:: we have 7 predictor variables and 5 are catagorical
+
+# model doesn't work and has an AIC = -3013.8
+## Same as linear model were we have more variavles with all the factors than data observed.
+
+
+# REMOVE MomID variable
 
 Q2B = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
            + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex, data = seal_data, family = gaussian)
 
-# remove Mom ID
 
 summary (Q2B)
 #AIC = 377.68
 
-#remove Year
+#REMOVE Year
 
 Q2C = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
            + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data, family = gaussian)
 
 summary (Q2C)
 
-# Doesn't Work
+# Doesn't Work with AIC = -3146.2
 
-## So use Q2B model to step
+
+# REMOVE dominant prey species variable
+
+Q2D = glm (seal_data$Pup.Wean.Mass ~ seal_data$Diet.diversity + seal_data$Dietary.energy.density
+           + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data, family = gaussian)
+
+summary (Q2D)
+
+# Doesn't Work with AIC = -2919.9
+
+
+# REMOVE mom age
+
+Q2E = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+           + seal_data$Year + seal_data$Pup.sex, data = seal_data, family = gaussian)
+
+
+summary (Q2E)
+#AIC = 375.75
+# only intercept is significant
+
+
+# REMOVE pup sex
+
+Q2F = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+           + seal_data$Year + seal_data$Mom.Age + seal_data$MomID, data = seal_data, family = gaussian)
+
+summary (Q2F)
+
+### Does not work with AIC = -2922.3
+
+
+
+### In summary, removing Mom age and Mom ID give viable models because is reduces the
+#### number of variables to a point that we have enough data observations
+
+# Lets try removing both these variables in one model to see the AIC score
+
+
+Q2G = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
+           + seal_data$Year + seal_data$Pup.sex, data = seal_data, family = gaussian)
+
+
+summary (Q2G)
+## AIC = 375.75
+## Same as removal of Mom Age alone, so should we keep Mom ID in the model?
+### Best model to use for the step function is Q2E
+
+
+## So use Q2E model to step
 
 
 
 #Step Function
 
-fwd.model = step(Q2B, direction='forward')
-# all varialves except MomID and AIC = 377.68
+fwd.model = step(Q2E, direction='forward')
+# all varialves except MomID and Mom Age
+### AIC = 377.68
 
-backward.model = step(Q2B, direction='backward')
+backward.model = step(Q2E, direction='backward')
 # only Dominant prey species and Diet Diversity and AIC = 363.54
 
-### step backward found that the best model only included 3 predictor variables
+### step backward found that the best model only included 2 predictor variables
 # and has a AIC = 363.54 for the variables (Seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity)
 
 
 # We now run this Gernalized Linear Model (GLM) with a Gaussian family
 
-Q2D = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = gaussian)
+Q2H = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = gaussian)
 
-summary (Q2D)
+summary (Q2H)
 
 ## AIC = 363.54
 
-### Conclustion is Q2D is best model with AIC 363.54 for GLM and Pollock and White Hake are the most significant variables.
+### Conclusion is Q2D is best model with AIC 363.54 for GLM and Pollock (p-value = 0.000949) and
+## White Hake (p-value = 0.044627) are the most significant variables.
 
+### This show importance of running a GLMM because both these variables are categorical data.
+
+
+
+
+###### Run Generaalized Linear Mixed MOdel
 
 
 
