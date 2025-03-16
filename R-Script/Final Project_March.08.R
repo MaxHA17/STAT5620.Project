@@ -683,7 +683,7 @@ summary (Q2H)
 
 ## AIC = 363.54
 
-### Conclusion is Q2D is best model with AIC 363.54 for GLM and Pollock (p-value = 0.000949) and
+### Conclusion is Q2H is best model with AIC 363.54 for GLM and Pollock (p-value = 0.000949) and
 ## White Hake (p-value = 0.044627) are the most significant variables.
 
 ### This show importance of running a GLMM because both these variables are categorical data.
@@ -691,7 +691,178 @@ summary (Q2H)
 
 
 
-###### Run Generalized Linear Mixed MOdel
+###### Fit Generalized Linear Mixed Model
+
+
+require(lme4)
+
+GLMM_A = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+           + (1 | Year) + (1 | Mom.Age) + (1 | Pup.sex) + (1 | MomID), data = seal_data, family = gaussian)
+
+
+summary(GLMM_A)
+
+
+### Compare Full Generalized Linear Mixed Model (GLMM_A) to Best Generalized Linear Model (Q2H)
+
+model.comparison(GLMM_A, Q2H)
+
+#        aic     bic            bayes.factor
+# GLMM_A 362.559 380.787        0.593
+# Q2H    363.539 379.742        1.686
+
+
+
+
+### Romove Mom_ID
+
+GLMM_=B = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+               + (1 | Year) + (1 | Mom.Age) + (1 | Pup.sex), data = seal_data, family = gaussian)
+
+
+summary(GLMM_B)
+
+model.comparison(GLMM_A, GLMM_B)
+
+#       aic         bic             bayes.factor     p
+# GLMM_A 362.559   380.787        0.218              0.195
+# GLMM_B 361.534   377.737        4.596
+
+## model better without Mom ID variable
+
+
+
+### Remove Mom_Age
+
+GLMM_C = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+                + (1 | Year) +  (1 | Pup.sex), data = seal_data, family = gaussian)
+
+
+model.comparison(GLMM_B, GLMM_C)
+
+#        aic      bic            bayes.factor p
+# GLMM_B 361.534  377.737        0.134        1
+# GLMM_C 359.534  373.712        7.482
+
+# Model better fit without Mom ID and Mom Age
+
+
+
+### Remove Year
+
+GLMM_D = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+               + (1 | Pup.sex), data = seal_data, family = gaussian)
+
+model.comparison(GLMM_C, GLMM_D)
+
+#        aic     bic             bayes.factor p
+# GLMM_C 359.534 373.712        0.134         1
+# GLMM_D 357.534 369.686        7.483
+
+# Model better fit without Mom ID and Mom Age + Year
+
+
+### Remove Pup Sex
+
+GLMM_E = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species) ,
+               data = seal_data, family = gaussian)
+
+model.comparison(GLMM_D, GLMM_E)
+
+#       aic      bic           bayes.factor p
+#GLMM_D 357.534 369.686        0.134        1
+#GLMM_E 355.534 365.661        7.483
+
+
+### Model Better fit without Pup Sex
+
+
+
+### Remove Pup Dietary.engery.density
+
+GLMM_F = glmer(Pup.Wean.Mass ~  Diet.diversity + (1 | Dominant.prey.species) ,
+               data = seal_data, family = gaussian)
+
+model.comparison(GLMM_E, GLMM_F)
+
+#.      aic     bic            bayes.factor     p
+#GLMM_E 355.534 365.661        4.283           0.131
+#GLMM_F 360.469 368.570        0.233
+
+
+# Model GLMM_E actually better so keep Dietaty. energy. density
+
+
+### Remove Diet Diversity
+
+GLMM_G = glmer(Pup.Wean.Mass ~  Dietary.energy.density + (1 | Dominant.prey.species) ,
+               data = seal_data, family = gaussian)
+
+model.comparison(GLMM_E, GLMM_G)
+
+#          aic     bic         bayes.factor     p
+# GLMM_E 355.534 365.661      126.498        0.005
+# GLMM_G 367.240 375.342        0.008
+
+
+# Model GLMM_E actually better so keep Diet Diversity
+
+
+
+
+### Remove Dominant.prey.species
+
+GLMM_H = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density,
+               data = seal_data, family = gaussian)
+
+model.comparison(GLMM_E, GLMM_H)
+
+#       aic      bic           bayes.factor p
+#GLMM_D 357.534 369.686        0.134        1
+#GLMM_E 355.534 365.661        7.483
+
+
+### Model doesn't work because Mixed Model without random effects
+
+
+
+
+### Compare Best Mixed Model to Best Linear Model
+
+model.comparison(GLMM_E,Q1_Reduced )
+
+#             aic     bic         bayes.factor
+# GLMM_E     355.534 365.661     1141.872
+# Q1_Reduced 363.539 379.742        0.001
+
+### Mixed Model better fit
+
+
+
+### Compare Best Mixed Model to Best Generalized Linear Model
+
+model.comparison(GLMM_E,Q2H)
+
+#         aic     bic         bayes.factor
+# GLMM_E 355.534 365.661     1141.872
+# Q2H    363.539 379.742        0.001
+
+
+
+
+
+
+##### Conclusion is the best mixed model is the best model overall and it is
+
+
+
+GLMM_E = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species) ,
+               data = seal_data, family = gaussian)
+
+model.comparison(GLMM_D, GLMM_E)
+
+#       aic      bic           bayes.factor p
+#GLMM_E 355.534 365.661        7.483
 
 
 
