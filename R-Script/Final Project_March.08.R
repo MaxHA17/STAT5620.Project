@@ -426,6 +426,7 @@ summary(seal_data)
 
 seal_data
 
+# rows= n=56 observations
 
 
 # Plot varibles to see distributions of predictor and response variables
@@ -501,8 +502,18 @@ seal_data$MomID = as.factor(seal_data$MomID)
 seal_data$Year = as.factor(seal_data$Year)
 seal_data$Dominant.prey.species = as.factor(seal_data$Dominant.prey.species)
 seal_data$Pup.sex = as.factor(seal_data$Pup.sex)
+seal_data$Pup.Mom.Age = as.factor(seal_data$Mom.Age)
 
-
+nlevels(seal_data$MomID)
+# 51
+nlevels(seal_data$Year)
+# 13
+nlevels(seal_data$Dominant.prey.species)
+# 6
+nlevels(seal_data$Pup.sex)
+# 2
+nlevels(seal_data$Pup.Mom.Age)
+# 17
 
 Q1 = lm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
         + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data)
