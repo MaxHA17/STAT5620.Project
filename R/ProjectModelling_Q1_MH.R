@@ -8,7 +8,7 @@ View(Data_Q1)
 
 #Ensure the data types are correctly assigned
 Data_Q1$MomID <- as.factor(Data_Q1$MomID)
-Data_Q1$Year <- as.factor(Data_Q1$Year)
+#Data_Q1$Year <- as.factor(Data_Q1$Year)
 Data_Q1$`Dominant prey species`<- as.character(Data_Q1$`Dominant prey species`)
 Data_Q1$`Diet diversity` <- as.numeric(Data_Q1$`Diet diversity`)
 Data_Q1$`Dietary energy density` <- as.numeric(Data_Q1$`Dietary energy density`)
@@ -55,6 +55,7 @@ summary(mom_mod)
 #The initial model suggests that individuals with capelin or pollock as the dominant prey species gain less mass during foraging. Note that these were the species with few observations.
 
 #Check residuals
+par(mfrow = c(2, 2))
 plot(mom_mod)
 
 #The q-q plot suggests model fit is not great. The values cannot be log transformed because many are negative. Try adding a constant value (the largest negative number) to all mass values
@@ -66,6 +67,7 @@ mom_mod <- glm(data=Data_1, family = gaussian(link="log"), formula = MassChange 
 
 summary(mom_mod)
 
+par(mfrow = c(2, 2))
 plot(mom_mod)
 
 #This greatly improved the residual plots
@@ -80,6 +82,11 @@ mom_mod2 <- glm(formula = MassChange ~ DietDiv + Year + DomSpp, family = gaussia
 
 summary(mom_mod2)
 
+
+coef_estimates <- coef(summary(mom_mod2))[, "Estimate"]
+response_scale_coefs <- exp(coef_estimates)
+print(response_scale_coefs)
+
 plot(mom_mod2)
 
 ##Create a fitted vs predicted values plots
@@ -91,10 +98,10 @@ observed_values1 <- Data_1$MassChange
 
 # Plot the fitted vs. observed values
 ggplot(data = Data_1, aes(x = fitted_values1, y = observed_values1)) +
-  geom_point(color = "blue") +
+  geom_point(color = "black") +
   geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +  # Add 1:1 line
   labs(
-    title = "Fitted vs. Observed Mom Mass Change Values",
+    title = "Fitted vs. Observed Vlues with 1:1 line",
     x = "Fitted Values",
     y = "Observed Values"
   ) +
@@ -107,8 +114,10 @@ library(ggsignif)
 ggplot(Data_Q1, aes(x = DomSpp, y = MassChange, fill = DomSpp)) +
   geom_boxplot() +
   stat_summary(
-    fun = "mean", geom = "point", shape = 18, size = 3, color = "red"  # Add mean as a red point
-  ) + geom_text(x = "Capelin", y = -5, label = "*",  # Asterisk at "Capelin" on x-axis and y = -5
+    fun = "mean", geom = "errorbar",
+    aes(ymax = ..y.., ymin = ..y..),  # Make it a horizontal line
+    width = 0.75, color = "red", size = 1.2  # Control line width and color
+  )  + geom_text(x = "Capelin", y = -5, label = "*",  # Asterisk at "Capelin" on x-axis and y = -5
     aes(x = x, y = y, label = label),  # Position asterisk
     color = "black", size = 6, fontface = "bold"
   ) + geom_text(x = "Pollock", y = 20, label = "*",  # Asterisk at "Pollock" on x-axis and y = 20
@@ -116,7 +125,7 @@ ggplot(Data_Q1, aes(x = DomSpp, y = MassChange, fill = DomSpp)) +
                 color = "black", size = 6, fontface = "bold"
   ) +
   labs(
-    title = "Median (black line) mean (red dot) mass change by dominant prey species",
+    title = "Median (black line) mean (red line) mass change by dominant prey species",
     x = "Prey species",
     y = "Mass change (kg)", fill = "Dominant prey species"
   ) +
