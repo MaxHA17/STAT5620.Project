@@ -1,7 +1,8 @@
 ##Data modelling - question 2
 #Research question:	Does female diet predict pup weaning mass in Northwest Atlantic grey seals?
 
-#Load the data
+#Load the data and r packages
+library(STAT5620.Project)
 library(readr)
 Data_Q2 <- read_csv("Processed_Data/Data_Q2.csv")
 View(Data_Q2)
@@ -39,7 +40,6 @@ Data_Q2 <- Data_Q2 %>%
 #With only 3 observations of capelin and 1 observation of white hake, these individuals may have to be removed
 
 ##plot and explore the data
-library(STAT5620.Project)
 see <- plot_explore(Data_Q2, response = "WeanMass",
                     continuous_vars = c("DietEngDen", "DietDiv", "MomAge"),
                     categorical_vars = c("Year", "DomSpp", "PupSex"))
@@ -84,10 +84,56 @@ pup_mod2 <- glm(formula = WeanMass ~ DietDiv + DomSpp, family = Gamma(link = "lo
 
 summary(pup_mod2)
 
-#Transform coefficient estimates back to the response scale
+##Transform coefficient estimates back to the response scale
+#take and transofrm the intercept
+int <- pup_mod2$coefficients['(Intercept)']
+intE <- exp(int)
+
+##calculate the mean % difference in pup weaning mass per each dominant prey species
 coef_estimates <- coef(summary(pup_mod2))[, "Estimate"]
 response_scale_coefs <- exp(coef_estimates)
 print(response_scale_coefs)
+
+#Redfish
+coefRed <- pup_mod2$coefficients['DomSppRedfish']
+coefRed <- exp(coefRed+int)
+RedfishP <- ((coefRed/intE)*100)-100
+
+RedfishP <- round(RedfishP,2)
+RedfishP
+
+
+#Sand lance
+coefSa <- pup_mod2$coefficients['DomSppNorthernSandlance']
+coefSa <- exp(coefSa+int)
+SandP <- ((coefSa/intE)*100)-100
+
+SandP <- round(SandP,2)
+SandP
+
+#Caoelin
+coefCa <- pup_mod2$coefficients['DomSppCapelin']
+coefCa <- exp(coefCa+int)
+CaP <- ((coefCa/intE)*100)-100
+
+CaP <- round(CaP,2)
+CaP
+
+#Pollock
+coefPo <- pup_mod2$coefficients['DomSppPollock']
+coefPo <- exp(coefPo+int)
+PoP <- ((coefPo/intE)*100)-100
+
+PoP <- round(PoP,2)
+PoP
+
+#Diet diversity
+coefDiv <- pup_mod2$coefficients['DietDiv']
+coefDiv <- exp(coefDiv+int)
+DivP <- ((coefDiv/intE)*100)-100
+
+DivP <- round(DivP,2)
+DivP
 
 ##Create a fitted vs predicted values plots
 # Get the fitted values (predicted values from the model)
