@@ -912,3 +912,131 @@ model.comparison(GLMM_F, GLM_Final)
 # GLM_Final 356.324   370.375        1.358
 
 
+
+##### Cross Validation for best fit GLM and GLMM
+
+
+require(modelr)
+require(caret)
+require(readr)
+# Data
+attach(seal_data)
+
+# Set Random Seed
+set.seed(1980)
+
+# Create Index Matrix (80% train data and 20% test data )
+index = createDataPartition(seal_data$Pup.Wean.Mass, p = .8, list = FALSE, times = 1)
+
+summary(seal_data$Pup.Wean.Mass)
+print(seal_data$Pup.Wean.Mass)
+
+# Convert data frame
+data_frame = as.data.frame(seal_data)
+
+# Create a data frame for the train data that is 80%
+train_data_frame = data_frame[index,]
+
+# Create a data frame for the test data that is 20% ("-" before index mean everything but the 80%)
+test_data_frame = data_frame[-index,]
+
+# Convert response variable in both train and test data frame to a factor
+train_data_frame$Pup.Wean.Mass = as.factor (train_data_frame$Pup.Wean.Mass)
+test_data_frame$Pup.Wean.Mass = as.factor (test_data_frame$Pup.Wean.Mass)
+
+# We know that diet diversity and dietary energy density are numberic data but
+# dominant prey species is
+
+# Ensure the response variables classes are factors
+class (train_data_frame$Pup.Wean.Mass)
+# "factor"
+class (test_data_frame$Pup.Wean.Mass)
+# "factor"
+
+# Specify type of training method used and the number of folds
+control_specs = trainControl(method = "cv", number = 11 , savePredictions = "all")
+
+# Set Random Seed
+set.seed(1980)
+
+require(randomForest)
+
+# now we train the model with the best fit GLM above
+# GLM_Final = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = gaussian)
+
+
+model_cross = train(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity, family = gaussian,
+                    method = "glm", data = seal_data, trControl = control_specs)
+
+print (model_cross)
+
+# 55 samples
+#  2 predictor
+
+#  RMSE      Rsquared  MAE
+# 5.890982  0.3468978  4.950057
+
+
+
+### Determine the variable importance in the model
+varImp (model_cross)
+
+# Overall
+# Dominant.prey.speciesPollock            100.00
+# Diet.diversity                           34.97
+# Dominant.prey.speciesNorthernSandlance   32.91
+# Dominant.prey.speciesRedfish             22.24
+# Dominant.prey.speciesCapelin              0.00
+
+
+# We now apply the model to the test_data_frame we created from 20%
+# of the data that the new model created from the 11 folds has not yet seen
+
+# Predict outcome using model from train_data_frame applied to test_data_frame
+ = predict (model_cross, newdata = test_data_frame)
+
+
+# predictions results
+
+#. 52.91496 52.89044 51.20708 57.31017 51.07814 50.79505 49.88936 39.48103 48.02433
+
+
+test_data_frame$Pup.Wean.Mass
+# 50   56   45.5 55   48   63   53   38   40
+
+
+#Creates vectors having data points
+predicted_value <- (c(52.91496, 52.89044, 51.20708, 57.31017, 51.07814, 50.79505, 49.88936, 39.48103, 48.02433))
+expected_value <- (c(50,56,45.5,55,48,63,53,38,40))
+
+
+
+Cross_Validation_Corrolation = cor (predicted_value, expected_value)
+
+### 0.6595067
+
+R2 = (Cross_Validation_Corrolation^2 )
+
+### 0.4349491
+
+
+
+
+confusionMatrix(data= predictions, test_data_frame$Pup.Wean.Mass)
+
+confusionMatrix(predicted_value_2, reference = expected_value_2)
+
+levels(predicted_value)
+levels(expected_value)
+#Creates vectors having data points
+expected_value <- factor(c(1,0,1,0,1,1,1,0,0,1))
+predicted_value <- factor(c(1,0,0,1,1,1,0,0,0,1))
+
+#Creating confusion matrix
+example <- confusionMatrix(data=predicted_value, reference = expected_value)
+
+#Display results
+example
+
+
+
