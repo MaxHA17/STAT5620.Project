@@ -31,7 +31,7 @@ plot_explore <- function(data, response, continuous_vars = NULL, categorical_var
   # Remove rows with NAs in the valid response and predictor variables
   data_clean <- data[complete.cases(data[valid_vars]), ]
 
-  # 1️⃣ Scatterplots for Continuous Predictors
+  # 1 Scatterplots for Continuous Predictors
   if (!is.null(continuous_vars)) {
     continuous_vars <- continuous_vars[continuous_vars %in% valid_vars]  # Ensure continuous_vars are valid
     for (var in continuous_vars) {
@@ -47,7 +47,7 @@ plot_explore <- function(data, response, continuous_vars = NULL, categorical_var
     }
   }
 
-  # 2️⃣ Boxplots for Categorical Predictors
+  # 2 Boxplots for Categorical Predictors
   if (!is.null(categorical_vars)) {
     categorical_vars <- categorical_vars[categorical_vars %in% valid_vars]  # Ensure categorical_vars are valid
     for (var in categorical_vars) {
@@ -64,7 +64,7 @@ plot_explore <- function(data, response, continuous_vars = NULL, categorical_var
     }
   }
 
-  # 3️⃣ Create a Composite Figure (Grid of All Plots)
+  # 3 Create a Composite Figure (Grid of All Plots)
   if (length(plots) > 0) {
     # Arrange plots in a grid layout
     grid.arrange(grobs = plots, ncol = 2)  # Change ncol to adjust layout
