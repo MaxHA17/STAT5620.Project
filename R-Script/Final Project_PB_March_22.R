@@ -918,6 +918,5 @@ model.comparison(GLMM_F, GLM_Final)
 #           aic        bic           bayes.factor
 # GLMM_F    353.737   361.766        74.043
 # GLM_Final 356.324   370.375        1.358
->>>>>>> a2804bdf2682b1fd8c8e3bd674efa6b36078e6de
 
 
