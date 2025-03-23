@@ -482,14 +482,14 @@ plot_grid(a,b,c,d,e,f,g,h)
 require(ggplot2)
 
 # Pup Wean Mass + Dietary.energy.density
-ggplot(seal_data) + geom_point(aes(seal_data$Dietary.energy.density, seal_data$Pup.Wean.Mass, color = MomID)) +
+ggplot(seal_data) + geom_point(aes(seal_data$Dietary.energy.density, seal_data$Pup.Wean.Mass, color = Dominant.prey.species)) +
   labs(title = "Pup Wean Mass and Dietary Energy Density", x = "Dietary Energy Density (kJ/g of prey tissue)", y = "Pup Wean Mass (Kg)") +
   geom_smooth(aes(seal_data$Dietary.energy.density, seal_data$Pup.Wean.Mass), method="lm", se=T)
 
 # Pup Wean Mass + Diet Diveristy
 ggplot(seal_data) + geom_point(aes(seal_data$Diet.diversity, seal_data$Pup.Wean.Mass, color = seal_data$MomID)) +
   labs(title = "Pup Wean Mass and Diet Diversity", x = "Diet Diveristy (no specific units for Shannon index)", y = "Pup Wean Mass (Kg)") +
-  geom_smooth(aes(seal_data$Diet.diversity, seal_data$Pup.Wean.Mass), method="lm", se=T)
+  geom_smooth( method="lm", se=T)
 
 # Pup Wean Mass + Year
 ggplot(seal_data) + geom_point(aes(seal_data$Year, seal_data$Pup.Wean.Mass, color = seal_data$MomID)) +
@@ -512,8 +512,21 @@ ggplot(seal_data) + geom_point(aes(seal_data$Pup.sex, seal_data$Pup.Wean.Mass)) 
 
 # Pup Wean Mass + Maternal Age
 ggplot(seal_data) + geom_point(aes(seal_data$Mom.Age, seal_data$Pup.Wean.Mass)) +
-  labs(title = "Pup Wean Mass and Maternal Age", x = "Maternal Age", y = "Pup Wean Mass (Kg)") +
+  labs(title = "Pup Wean Mass and Maternal Age", x = "Maternal Age", y = "Pup Wean Mass (Kg)") + geom_point() +
   geom_smooth(aes(seal_data$Mom.Age, seal_data$Pup.Wean.Mass), method="lm", se=T)
+
+
+
+
+
+##### Exploring Pup Wean Mass based on individuals fish species
+
+
+# Pup Wean Mass + Dietary.energy.density
+ggplot(seal_data) + geom_point(aes(Dietary.energy.density, Pup.Wean.Mass, color = Dominant.prey.species)) + geom_point() +
+geom_smooth(method = "lm" , se=F) + theme_minimal()
+
+
 
 
 
@@ -532,7 +545,7 @@ nlevels(seal_data$MomID)
 nlevels(seal_data$Year)
 # 13
 nlevels(seal_data$Dominant.prey.species)
-# 6
+# 5
 nlevels(seal_data$Pup.sex)
 # 2
 nlevels(seal_data$Pup.Mom.Age)
@@ -600,6 +613,7 @@ Q1_Reduced = lm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal
 
 summary(Q1_Reduced)
 
+
 # We find that a p-value: 0.00121 with a Adjusted R-squared:  0.2715  (27 % of variance explained by model)
 
 
@@ -608,9 +622,11 @@ summary(Q1_Reduced)
 
 
 
+#### Interact Plot to see how the categories within the Dominant.prey.species variable act independently
 
+library(jtools)
 
-
+qplot (seal_data$Dominant.prey.species, Q1_Reduced)
 
 
 
@@ -889,13 +905,7 @@ model.comparison(GLMM_E,Q2H)
 # Q2H    363.539 379.742        0.001
 
 
-
-
-
-
 ##### Conclusion is the best mixed model is the best model overall and it is
-
-
 
 GLMM_E = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species) ,
                data = seal_data, family = gaussian)
