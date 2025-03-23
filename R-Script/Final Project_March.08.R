@@ -638,24 +638,24 @@ qplot (seal_data$Dominant.prey.species, Q1_Reduced)
 Q2A = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
            + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data, family = gaussian)
 
-
 summary (Q2A)
+# AIC = 360.3
+
+### NOTE:: we have 7 predictor variables and 5 are categorical
+
+## Same as linear model were we have more variables with all the factors than data observed.
 
 
-### NOTE:: we have 7 predictor variables and 5 are catagorical
-
-# model doesn't work and has an AIC = -3013.8
-## Same as linear model were we have more variavles with all the factors than data observed.
-
+### Alter removing one predictor variable at a time.
 
 # REMOVE MomID variable
 
 Q2B = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
            + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex, data = seal_data, family = gaussian)
 
-
 summary (Q2B)
-#AIC = 377.68
+#AIC = 361.7
+
 
 #REMOVE Year
 
@@ -663,8 +663,7 @@ Q2C = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data
            + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data, family = gaussian)
 
 summary (Q2C)
-
-# Doesn't Work with AIC = -3146.2
+#AIC = 358.42
 
 
 # REMOVE dominant prey species variable
@@ -673,8 +672,7 @@ Q2D = glm (seal_data$Pup.Wean.Mass ~ seal_data$Diet.diversity + seal_data$Dietar
            + seal_data$Year + seal_data$Mom.Age + seal_data$Pup.sex + seal_data$MomID, data = seal_data, family = gaussian)
 
 summary (Q2D)
-
-# Doesn't Work with AIC = -2919.9
+#AIC = 363.29
 
 
 # REMOVE mom age
@@ -684,8 +682,7 @@ Q2E = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data
 
 
 summary (Q2E)
-#AIC = 375.75
-# only intercept is significant
+#AIC = 360.19
 
 
 # REMOVE pup sex
@@ -694,15 +691,7 @@ Q2F = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data
            + seal_data$Year + seal_data$Mom.Age + seal_data$MomID, data = seal_data, family = gaussian)
 
 summary (Q2F)
-
-### Does not work with AIC = -2922.3
-
-
-
-### In summary, removing Mom age and Mom ID give viable models because is reduces the
-#### number of variables to a point that we have enough data observations
-
-# Lets try removing both these variables in one model to see the AIC score
+#AIC = 358.42
 
 
 Q2G = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity + seal_data$Dietary.energy.density
@@ -711,39 +700,54 @@ Q2G = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data
 
 summary (Q2G)
 ## AIC = 375.75
-## Same as removal of Mom Age alone, so should we keep Mom ID in the model?
-### Best model to use for the step function is Q2E
 
 
-## So use Q2E model to step
+#Step Function on Q2B (no mom ID)
 
+fwd.model = step(Q2B, direction='forward')
+# all varialves
+### AIC = 361.7
 
+backward.model = step(Q2B, direction='backward')
 
-#Step Function
+seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity +
+  seal_data$Dietary.energy.density + seal_data$Year + seal_data$Mom.Age +
+  seal_data$Pup.sex
 
-fwd.model = step(Q2E, direction='forward')
-# all varialves except MomID and Mom Age
-### AIC = 377.68
+# Full Model
+# AIC=361.7
 
-backward.model = step(Q2E, direction='backward')
-# only Dominant prey species and Diet Diversity and AIC = 363.54
+# Remove Pup Sex
+# Pup Mass ~ Dominant Prey Species + Diet Diversity + Energy Density + Year + Mom Age
+# AIC= 359.73
 
-### step backward found that the best model only included 2 predictor variables
-# and has a AIC = 363.54 for the variables (Seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity)
+# Remove Mom Age
+# Pup Mass ~ Dominant Prey Species + Diet Diversity + Energy Density + Year
+# AIC= 358.21
 
+# Remove Year
+# Pup Mass ~ Dominant Prey Species + Diet Diversity + Energy Density
+# AIC= 356.63
 
-# We now run this Gernalized Linear Model (GLM) with a Gaussian family
+# Remove Energy Diversity
+# Pup Mass ~ Dominant Prey Species + Diet Diversity
+# AIC= 356.32
 
-Q2H = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = gaussian)
+# We now run this Generalized Linear Model (GLM) with a Gaussian family
 
-summary (Q2H)
+GLM_Final = glm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = gaussian)
 
-## AIC = 363.54
+summary (GLM_Final)
 
-### Conclusion is Q2H is best model with AIC 363.54 for GLM and Pollock (p-value = 0.000949) and
-## White Hake (p-value = 0.044627) are the most significant variables.
+## AIC = 356.32
 
-### This show importance of running a GLMM because both these variables are categorical data.
+# Estimate Std. Error t value Pr(>|t|)
+# (Intercept)                                        64.422      5.013  12.850  < 2e-16 ***
+# seal_data$Dominant.prey.speciesCapelin             -5.133      4.743  -1.082 0.284509
+# seal_data$Dominant.prey.speciesNorthernSandlance   -6.630      3.519  -1.884 0.065539 .
+# seal_data$Dominant.prey.speciesPollock            -15.831      4.500  -3.518 0.000949 ***
+# seal_data$Dominant.prey.speciesRedfish             -5.797      3.570  -1.624 0.110838
+# seal_data$Diet.diversity                          -20.491     10.596  -1.934 0.058916 .
 
 
 
@@ -753,7 +757,7 @@ summary (Q2H)
 
 require(lme4)
 
-GLMM_A = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+GLMM_A = lmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
            + (1 | Year) + (1 | Mom.Age) + (1 | Pup.sex) + (1 | MomID), data = seal_data, family = gaussian)
 
 
@@ -762,240 +766,121 @@ summary(GLMM_A)
 
 ### Compare Full Generalized Linear Mixed Model (GLMM_A) to Best Generalized Linear Model (Q2H)
 
-model.comparison(GLMM_A, Q2H)
+model.comparison(GLMM_A, GLM_Final)
 
-#        aic     bic            bayes.factor
-# GLMM_A 362.559 380.787        0.593
-# Q2H    363.539 379.742        1.686
-
-
+#        aic         bic            bayes.factor
+# GLMM_A    355.939  374.005        0.163
+# GLM_Final 356.324  370.375        6.141
 
 
-### Romove Mom_ID
+### Remove Mom_ID
 
-GLMM_=B = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+GLMM_B = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
                + (1 | Year) + (1 | Mom.Age) + (1 | Pup.sex), data = seal_data, family = gaussian)
-
 
 summary(GLMM_B)
 
-model.comparison(GLMM_A, GLMM_B)
+model.comparison(GLMM_B, GLM_Final)
 
-#       aic         bic             bayes.factor     p
-# GLMM_A 362.559   380.787        0.218              0.195
-# GLMM_B 361.534   377.737        4.596
+#          aic        bic           bayes.factor
+# GLMM_B    354.929   370.987        0.736
+# GLM_Final 356.324   370.375        1.358
 
-## model better without Mom ID variable
-
-
-
-### Remove Mom_Age
-
-GLMM_C = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
-                + (1 | Year) +  (1 | Pup.sex), data = seal_data, family = gaussian)
-
-
-model.comparison(GLMM_B, GLMM_C)
-
-#        aic      bic            bayes.factor p
-# GLMM_B 361.534  377.737        0.134        1
-# GLMM_C 359.534  373.712        7.482
-
-# Model better fit without Mom ID and Mom Age
-
-
-
-### Remove Year
-
-GLMM_D = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
-               + (1 | Pup.sex), data = seal_data, family = gaussian)
-
-model.comparison(GLMM_C, GLMM_D)
-
-#        aic     bic             bayes.factor p
-# GLMM_C 359.534 373.712        0.134         1
-# GLMM_D 357.534 369.686        7.483
-
-# Model better fit without Mom ID and Mom Age + Year
 
 
 ### Remove Pup Sex
 
-GLMM_E = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species) ,
-               data = seal_data, family = gaussian)
+GLMM_C = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+               + (1 | Year) + (1 | Mom.Age), data = seal_data, family = gaussian)
 
-model.comparison(GLMM_D, GLMM_E)
+summary(GLMM_C)
 
-#       aic      bic           bayes.factor p
-#GLMM_D 357.534 369.686        0.134        1
-#GLMM_E 355.534 365.661        7.483
+model.comparison(GLMM_C, GLM_Final)
 
-
-### Model Better fit without Pup Sex
-
+#           aic        bic           bayes.factor
+# GLMM_C    352.929   366.980        5.462
+# GLM_Final 356.324   370.375        1.358
 
 
-### Remove Pup Dietary.engery.density
+### Remove Mom Age
 
-GLMM_F = glmer(Pup.Wean.Mass ~  Diet.diversity + (1 | Dominant.prey.species) ,
-               data = seal_data, family = gaussian)
+GLMM_D = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+               + (1 | Year), data = seal_data, family = gaussian)
 
-model.comparison(GLMM_E, GLMM_F)
+summary(GLMM_D)
 
-#.      aic     bic            bayes.factor     p
-#GLMM_E 355.534 365.661        4.283           0.131
-#GLMM_F 360.469 368.570        0.233
+model.comparison(GLMM_D, GLM_Final)
 
-
-# Model GLMM_E actually better so keep Dietaty. energy. density
-
-
-### Remove Diet Diversity
-
-GLMM_G = glmer(Pup.Wean.Mass ~  Dietary.energy.density + (1 | Dominant.prey.species) ,
-               data = seal_data, family = gaussian)
-
-model.comparison(GLMM_E, GLMM_G)
-
-#          aic     bic         bayes.factor     p
-# GLMM_E 355.534 365.661      126.498        0.005
-# GLMM_G 367.240 375.342        0.008
+#           aic        bic           bayes.factor
+# GLMM_D    350.929   362.973       40.506
+# GLM_Final 356.324   370.375        1.358
 
 
-# Model GLMM_E actually better so keep Diet Diversity
+### Remove Year
+
+GLMM_E = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+              , data = seal_data, family = gaussian)
+
+summary(GLMM_E)
+
+model.comparison(GLMM_E, GLM_Final)
+
+#           aic        bic           bayes.factor
+# GLMM_E    348.930    358.967       300.195
+# GLM_Final 356.324   370.375        1.358
 
 
+### Remove Energy Density
 
+GLMM_F = glmer(Pup.Wean.Mass ~  Diet.diversity + (1 | Dominant.prey.species)
+               , data = seal_data, family = gaussian)
 
-### Remove Dominant.prey.species
+summary(GLMM_F)
 
-GLMM_H = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density,
-               data = seal_data, family = gaussian)
+model.comparison(GLMM_F, GLM_Final)
 
-model.comparison(GLMM_E, GLMM_H)
-
-#       aic      bic           bayes.factor p
-#GLMM_D 357.534 369.686        0.134        1
-#GLMM_E 355.534 365.661        7.483
-
-
-### Model doesn't work because Mixed Model without random effects
+#           aic        bic           bayes.factor
+# GLMM_F    353.737   361.766        74.043
+# GLM_Final 356.324   370.375        1.358
 
 
 
 
-### Compare Best Mixed Model to Best Linear Model
+# Conclusion is GLMM_E is the best model with intercept random effects
 
-model.comparison(GLMM_E,Q1_Reduced )
+GLMM_E = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+               , data = seal_data, family = gaussian)
 
-#             aic     bic         bayes.factor
-# GLMM_E     355.534 365.661     1141.872
-# Q1_Reduced 363.539 379.742        0.001
+summary(GLMM_E)
 
-### Mixed Model better fit
-
-
-
-### Compare Best Mixed Model to Best Generalized Linear Model
-
-model.comparison(GLMM_E,Q2H)
-
-#         aic     bic         bayes.factor
-# GLMM_E 355.534 365.661     1141.872
-# Q2H    363.539 379.742        0.001
+model.comparison(GLMM_E, GLM_Final)
+#           aic        bic           bayes.factor
+# GLMM_E    348.930    358.967       300.195
+# GLM_Final 356.324   370.375        1.358
 
 
-##### Conclusion is the best mixed model is the best model overall and it is
-
-GLMM_E = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species) ,
-               data = seal_data, family = gaussian)
-
-model.comparison(GLMM_D, GLMM_E)
-
-#       aic      bic           bayes.factor p
-#GLMM_E 355.534 365.661        7.483
+### Try Random Effect of Dominant Prey Species with Slopes
 
 
+GLMM_F = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + Dominant.prey.species
+               + (Dietary.energy.density | Dominant.prey.species) , data = seal_data, family = gaussian)
+
+summary(GLMM_F)
+
+model.comparison(GLMM_F, GLM_Final)
+#           aic        bic           bayes.factor
+# GLMM_F    334.595    356.675        943.929
+# GLM_Final 356.324    370.375        1.358
 
 
+GLMM_F = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + Dominant.prey.species
+               + (Dominant.prey.species| Diet.diversity) , data = seal_data, family = gaussian)
 
+summary(GLMM_G)
 
-####.   MAX CODE
+model.comparison(GLMM_F, GLM_Final)
+#           aic        bic           bayes.factor
+# GLMM_F    353.737   361.766        74.043
+# GLM_Final 356.324   370.375        1.358
 
-#' Plot Continuous and Categorical Predictors Against a Response Variable
-#'
-#' This function takes a dataframe and creates:
-#' - Scatterplots for each selected continuous predictor against a response variable.
-#' - Boxplots for each selected categorical predictor against a response variable.
-#'
-#' @param data A dataframe containing the variables to be plotted.
-#' @param response A string specifying the response variable (must be numeric).
-#' @param continuous_vars A character vector of continuous predictor variables (numeric columns).
-#' @param categorical_vars A character vector of categorical predictor variables (factor/character columns).
-#'
-#' @return A list of ggplot objects, one for each predictor variable plotted against the response.
-#' @import ggplot2
-#' @export
-#'
-#' @examples
-#' # Example using the built-in mtcars dataset
-#' plot_explore(mtcars, response = "mpg",
-#'                 continuous_vars = c("hp", "wt", "disp"),
-#'                 categorical_vars = c("cyl", "gear"))
-plot_explore <- function(data, response, continuous_vars = NULL, categorical_vars = NULL) {
-  library(ggplot2)  # Load ggplot2 for visualization
-  library(gridExtra)  # Load gridExtra for arranging plots
-
-  plots <- list()  # Store plots
-
-  # Ensure the response and selected variables exist in the dataframe
-  all_vars <- c(response, continuous_vars, categorical_vars)
-  valid_vars <- all_vars[all_vars %in% names(data)]  # Filter out non-existing variables
-
-  # Remove rows with NAs in the valid response and predictor variables
-  data_clean <- data[complete.cases(data[valid_vars]), ]
-
-  # 1 Scatterplots for Continuous Predictors
-  if (!is.null(continuous_vars)) {
-    continuous_vars <- continuous_vars[continuous_vars %in% valid_vars]  # Ensure continuous_vars are valid
-    for (var in continuous_vars) {
-      p <- ggplot(data_clean, aes_string(x = var, y = response)) +
-        geom_point(alpha = 0.6, color = "black") +
-        geom_smooth(method = "lm", color = "red", se = FALSE) +
-        labs(title = paste(response, "vs", var),
-             x = var, y = response) +
-        theme_minimal() +theme(
-          panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-          panel.spacing = unit(2, "lines"))
-      plots[[var]] <- p  # Add to list
-    }
-  }
-
-  # 2 Boxplots for Categorical Predictors
-  if (!is.null(categorical_vars)) {
-    categorical_vars <- categorical_vars[categorical_vars %in% valid_vars]  # Ensure categorical_vars are valid
-    for (var in categorical_vars) {
-      # Check if the variable is factor/character, and if not, convert it to factor
-      data_clean[[var]] <- as.factor(data_clean[[var]])  # Convert categorical variable to factor
-      p <- ggplot(data_clean, aes_string(x = var, y = response)) +
-        geom_boxplot(fill = "lightblue", color = "black") +
-        labs(title = paste(response, "by", var),
-             x = var, y = response) +
-        theme_minimal() +theme(
-          panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-          panel.spacing = unit(2, "lines"))
-      plots[[var]] <- p  # Add to list
-    }
-  }
-
-  # 3 Create a Composite Figure (Grid of All Plots)
-  if (length(plots) > 0) {
-    # Arrange plots in a grid layout
-    grid.arrange(grobs = plots, ncol = 2)  # Change ncol to adjust layout
-  } else {
-    message("No plots were created.")
-  }
-
-  return(plots)  # Return all plots in a list
-}
 
