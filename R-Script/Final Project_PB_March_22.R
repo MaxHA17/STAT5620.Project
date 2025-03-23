@@ -862,13 +862,19 @@ model.comparison(GLMM_E, GLM_Final)
 ### Try Random Effect of Dominant Prey Species with Slopes
 
 
+<<<<<<< HEAD
 GLMM_F = lmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density
                + (Diet.diversity | Dominant.prey.species ) , data = seal_data)
+=======
+GLMM_F = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + Dominant.prey.species
+               + (Dietary.energy.density | Dominant.prey.species) , data = seal_data, family = gaussian)
+>>>>>>> a2804bdf2682b1fd8c8e3bd674efa6b36078e6de
 
 summary(GLMM_F)
 
 model.comparison(GLMM_F, GLM_Final)
 #           aic        bic           bayes.factor
+<<<<<<< HEAD
 # GLMM_F    352.918    366.970        5.490
 # GLM_Final 356.324    370.375        1.358
 
@@ -898,5 +904,20 @@ model.comparison(GLMM_H, GLM_Final)
 # GLM_Final 356.324    370.375        1.358
 
 ## model overfit (boundary (singular) fit.
+=======
+# GLMM_F    334.595    356.675        943.929
+# GLM_Final 356.324    370.375        1.358
+
+
+GLMM_F = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + Dominant.prey.species
+               + (Dominant.prey.species| Diet.diversity) , data = seal_data, family = gaussian)
+
+summary(GLMM_G)
+
+model.comparison(GLMM_F, GLM_Final)
+#           aic        bic           bayes.factor
+# GLMM_F    353.737   361.766        74.043
+# GLM_Final 356.324   370.375        1.358
+>>>>>>> a2804bdf2682b1fd8c8e3bd674efa6b36078e6de
 
 
