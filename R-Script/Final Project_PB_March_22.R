@@ -735,9 +735,19 @@ seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diver
 
 # We now run this Generalized Linear Model (GLM) with a Gaussian family
 
-GLM_Final = glm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = gaussian)
+
+### Try with gamma distribution based on feedback from presentation
+
+GLM_Final = glm(seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = Gamma (link= "log"))
+
+plot (GLM_Final)
 
 summary (GLM_Final)
+
+
+res_3 =resid(GLM_Final)
+plot(fitted(GLM_Final),res_3)
+abline(0,0)
 
 ## AIC = 356.32
 
@@ -822,6 +832,10 @@ GLMM_E = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | D
               , data = seal_data, family = gaussian)
 
 summary(GLMM_E)
+res =resid(GLMM_E)
+plot(fitted(GLMM_E),res)
+abline(0,0)
+
 
 model.comparison(GLMM_E, GLM_Final)
 
@@ -836,6 +850,11 @@ GLMM_F = glmer(Pup.Wean.Mass ~  Diet.diversity + (1 | Dominant.prey.species)
                , data = seal_data, family = gaussian)
 
 summary(GLMM_F)
+
+res_2 =resid(GLMM_F)
+plot(fitted(GLMM_F),res_2)
+abline(0,0)
+
 
 model.comparison(GLMM_F, GLM_Final)
 
@@ -858,6 +877,7 @@ model.comparison(GLMM_E, GLM_Final)
 # GLMM_E    348.930    358.967       300.195
 # GLM_Final 356.324   370.375        1.358
 
+improve.fit (GLMM_E, GLMM_F)
 
 ### Try Random Effect of Dominant Prey Species with Slopes
 
@@ -895,10 +915,6 @@ model.comparison(GLMM_H, GLM_Final)
 # GLMM_H    358.254    378.327        0.019
 # GLM_Final 356.324    370.375        1.358
 
-## model overfit (boundary (singular) fit.
-=======
-# GLMM_F    334.595    356.675        943.929
-# GLM_Final 356.324    370.375        1.358
 
 
 GLMM_F = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + Dominant.prey.species
@@ -966,8 +982,108 @@ require(randomForest)
 
 
 model_cross = train(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity, family = gaussian,
-                    method = "glm", data = seal_data, trControl = control_specs)
+                    method = "glm", data = train_data_frame, trControl = control_specs)
 
+print (model_cross)
+
+# 46 samples
+#  2 predictor
+
+#  RMSE      Rsquared  MAE
+#  5.902465  0.3720342  5.118876
+
+
+
+### Determine the variable importance in the model
+varImp (model_cross)
+
+# Overall
+# Dominant.prey.speciesPollock            100.00
+# Dominant.prey.speciesRedfish             25.59
+# Diet.diversity                           23.74
+# Dominant.prey.speciesNorthernSandlance   18.46
+# Dominant.prey.speciesCapelin              0.00
+
+
+# We now apply the model to the test_data_frame we created from 20%
+# of the data that the new model created from the 11 folds has not yet seen
+
+# Predict outcome using model from train_data_frame applied to test_data_frame
+ predications = predict (model_cross, newdata = test_data_frame)
+
+
+# predictions results
+
+#. 53.68369 51.35064 51.96753 58.46629 50.35432 50.06986 49.15978 39.97458 48.76934
+
+
+test_data_frame$Pup.Wean.Mass
+# 50   56   45.5 55   48   63   53   38   40
+
+
+#Creates vectors having data points
+predicted_value <- (c(53.68369, 51.35064, 51.96753, 58.46629, 50.35432, 50.06986, 49.15978, 39.97458, 48.76934))
+expected_value <- (c(50,56,45.5,55,48,63,53,38,40))
+
+
+
+Cross_Validation_Corrolation = cor (predicted_value, expected_value)
+
+### 0.5526089
+
+#### Cross Validation Corrolation squared is approx R2 value for model
+
+R2 = (Cross_Validation_Corrolation^2 )
+
+###R2 = 0.3053766
+
+
+
+###Cross Validation for GLMM
+
+
+# Create Index Matrix (80% train data and 20% test data )
+index = createDataPartition(seal_data$Pup.Wean.Mass, p = .8, list = FALSE, times = 1)
+
+summary(seal_data$Pup.Wean.Mass)
+print(seal_data$Pup.Wean.Mass)
+
+# Convert data frame
+data_frame = as.data.frame(seal_data)
+
+# Create a data frame for the train data that is 80%
+train_data_frame = data_frame[index,]
+
+# Create a data frame for the test data that is 20% ("-" before index mean everything but the 80%)
+test_data_frame = data_frame[-index,]
+
+# Convert response variable in both train and test data frame to a factor
+train_data_frame$Pup.Wean.Mass = as.factor (train_data_frame$Pup.Wean.Mass)
+test_data_frame$Pup.Wean.Mass = as.factor (test_data_frame$Pup.Wean.Mass)
+
+# We know that diet diversity and dietary energy density are numberic data but
+# dominant prey species is
+
+# Ensure the response variables classes are factors
+class (train_data_frame$Pup.Wean.Mass)
+# "factor"
+class (test_data_frame$Pup.Wean.Mass)
+# "factor"
+
+# Specify type of training method used and the number of folds
+control_specs = trainControl(method = "cv", number = 11 , savePredictions = "all")
+
+# Set Random Seed
+set.seed(1981)
+
+require(randomForest)
+
+# now we train the model with the best fit GLMM above
+# GLMM_E = glmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species)
+#               , data = seal_data, family = gaussian)
+
+model_cross = train(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (Diet.diversity | Dominant.prey.species),
+                    method = "lmer", data = train_data_frame, trControl = control_specs)
 print (model_cross)
 
 # 55 samples
@@ -993,7 +1109,7 @@ varImp (model_cross)
 # of the data that the new model created from the 11 folds has not yet seen
 
 # Predict outcome using model from train_data_frame applied to test_data_frame
- = predict (model_cross, newdata = test_data_frame)
+= predict (model_cross, newdata = test_data_frame)
 
 
 # predictions results
@@ -1015,28 +1131,8 @@ Cross_Validation_Corrolation = cor (predicted_value, expected_value)
 
 ### 0.6595067
 
+#### Cross Validation Corrolation squared is approx R2 value for model
+
 R2 = (Cross_Validation_Corrolation^2 )
 
-### 0.4349491
-
-
-
-
-confusionMatrix(data= predictions, test_data_frame$Pup.Wean.Mass)
-
-confusionMatrix(predicted_value_2, reference = expected_value_2)
-
-levels(predicted_value)
-levels(expected_value)
-#Creates vectors having data points
-expected_value <- factor(c(1,0,1,0,1,1,1,0,0,1))
-predicted_value <- factor(c(1,0,0,1,1,1,0,0,0,1))
-
-#Creating confusion matrix
-example <- confusionMatrix(data=predicted_value, reference = expected_value)
-
-#Display results
-example
-
-
-
+###R2 = 0.4349491
