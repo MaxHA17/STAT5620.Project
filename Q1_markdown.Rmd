@@ -1,0 +1,194 @@
+---
+title: "STAT5620_Q1_Analysis"
+output: pdf_document
+date: "2025-04-10"
+---
+
+**Research Question 1**
+
+Here we are exploring whether variation in diet influence maternal mass change over the foraging period leading up to parturition in Northwest Atlantic grey seals?
+
+The response variable of interest is maternal mass change. We will first look at the distribution of this variable:
+
+```{r}
+#Load the data
+library(readr)
+Data_Q1 <- read_csv("Processed_Data/Data_Q1.csv")
+View(Data_Q1)
+
+#Ensure the data types are correctly assigned
+Data_Q1$MomID <- as.factor(Data_Q1$MomID)
+Data_Q1$Year <- factor(Data_Q1$Year, levels = sort(unique(Data_Q1$Year)), ordered = TRUE)
+Data_Q1$`Dominant prey species`<- as.character(Data_Q1$`Dominant prey species`)
+Data_Q1$`Diet diversity` <- as.numeric(Data_Q1$`Diet diversity`)
+Data_Q1$`Dietary energy density` <- as.numeric(Data_Q1$`Dietary energy density`)
+
+summary(Data_Q1)
+
+#rename columns
+library(dplyr)
+Data_Q1 <- Data_Q1 %>%
+  rename(
+    DietEngDen = `Dietary energy density`,
+    DietDiv = `Diet diversity`,
+    DomSpp = `Dominant prey species`,
+    MassChange = `Mass change`)
+
+hist(Data_Q1$MassChange)
+```
+
+There are a total of n=76 observations and mass change appears to follow a normal distribution a Gaussian family distribution is a good starting point for an initial model.
+
+One of the covariates, dominant prey species, is a categorical variable. We will first check the number of observations in each category:
+
+```{r}
+table(Data_Q1$DomSpp)
+```
+
+With only one observation of white hake and 3 observations of capelin, there is likely not enough data to estimate the effect of these species on the response variable and we are unable to draw meaningful conclusions. These points also cause extreme residual values. Capelin and white hake observations will be removed from the data set:
+
+```{r}
+Data_Q1 <- Data_Q1 %>%
+  filter(DomSpp != "WhiteHake")
+
+Data_Q1 <- Data_Q1 %>%
+  filter(DomSpp != "Capelin")
+```
+
+The initial model seeks to model maternal mass change as a function of dominant prey species, diet diversity, dietary energy density, and deployment year. We will now explore the apparent relationships between each continuous and categorical covariate using the plot_explore function built and contained in the STAT5620.Project R package:
+
+```{r}
+library(STAT5620.Project)
+plot_explore(Data_Q1, response = "MassChange",
+                    continuous_vars = c("DietEngDen", "DietDiv"),
+                    categorical_vars = c("Year", "DomSpp"))
+```
+
+Initially, it appears that diet diversity is negatively related to mass change, with energy density possibly having a slight negative relationship. It also appears that animals with cod, redfish or sand lance as the dominant prey species gain more mass during foraging than females who primarily prey on Pollock. There does not appear to be any clear trends in mass change over time.
+
+We will begin with an initial model with all covariates of interest. Based on the distribution of mass change, we will begin with a simple model with a gaussian distribution and an identity link function:
+
+```{r}
+library(lme4)
+mom_mod <- glm(data=Data_Q1, family = gaussian(link="identity"), formula = MassChange ~ DietDiv + DietEngDen + Year + DomSpp)
+
+par(mfrow = c(2, 2))
+plot(mom_mod)
+```
+
+The residual plots from this initial model show good homoscedasticity and normality. There is one observation (observation 6) that appears to be an extreme value. This observation comes from a female that experiences an 88 kg increase in mass over the pre-breeding period foraging period, which is well above the mean mass change value of 28.5. However, none of the covariate values associated with this observation are abnormal and this point does not have high leverage. As a results, the decision is to retain this data point since it is not highly influential and knowledge of the system suggests it is a valid data point.
+
+We can now use step selection to preform repeated hypothesis tests for variable selection to determine which covariates best explain maternal mass change while minimizing model complexity and colinearity between covariates.
+
+```{r}
+step(mom_mod, direction = "both")
+```
+
+The lowest AIC model drops the dietary energy density covariate. We will update the initial model to drop the energy density covariate:
+
+```{r}
+mom_mod2 <- glm(formula = MassChange ~ DietDiv + Year + DomSpp, family = gaussian(link = "identity"),
+                data = Data_Q1)
+plot(mom_mod2)
+```
+
+All model residuals still look good. We can proceed to interpreting model output:
+
+```{r}
+summary(mom_mod2)
+```
+
+While several years have mass change values that significantly differ from the expected mass change value, the effect of time is not of direct interest to our research question and is only present to account for changes in prey dynamics over time. As a result, the interpretation of this output is not relvant. However, we see that females who feed primarily on pollock experience lower mass change than the reference level, in this case being females who primarily feed on cod. Being an identity link function, the model is essentially a simple linear model and there is no transformations applied to the response variable. As such, coefficient estimates can be interpreted directly. In this case, individuals who feed on pollock experience 47.5% lower mass change than individuals who primarily feed on cod. This effect is presented in figure 1.
+
+```{r}
+ggplot(Data_Q1, aes(x = DomSpp, y = MassChange, fill = DomSpp)) +
+  geom_boxplot() +
+  stat_summary(
+    fun = "mean", geom = "errorbar",
+    aes(ymax = ..y.., ymin = ..y..),  
+    width = 0.75, color = "red", size = 1.2  
+  ) + geom_text(x = "Pollock", y = 20, label = "*",  
+                aes(x = x, y = y, label = label),  
+                color = "black", size = 6, fontface = "bold"
+  ) +
+  labs(
+    title = "Figure 1. Median (black line) and mean (red line) mass change by dominant prey species",
+    x = "Prey species",
+    y = "Mass change (kg)", fill = "Dominant prey species"
+  ) +
+  theme_minimal() + theme(
+    axis.line = element_line(color = "black", size = 1),  # Add axis lines
+    axis.text.x = element_text(size = 12, angle = 45, hjust = 1)
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, max(Data_Q1$MassChange), by = 25) - 50
+  )
+
+```
+
+It may also be worth noting that diet diversity is almost significant at p = 0.0556. While this p-value is not significant, the negative relationship between diet diversity and mass change may support the observed effects of dominant prey species, where individuals who primarily prey on cod, sand lance, or redfish and have a lower diet diversity due to this focus on a few profitable species are more successful in gaining mass than individuals who feed on a more diverse array of prey species which include less profitable species.
+
+We can perform cross-validation to to test this models predictions. In order to have each fold represent about 10% of the data, we will perform 7 fold cross validation:
+
+```{r}
+set.seed(123)
+
+#Number of folds
+k <- 7
+
+# Split the data into folds
+DatCV <- Data_Q1 %>% mutate(fold = sample(rep(1:k, length.out = n())))
+
+# Create a vector to store RMSE for each fold
+rmse_values <- numeric(k)
+
+#Perform cross validation
+for (i in 1:k) {
+  train_data <- DatCV %>% filter(fold != i)
+  test_data  <- DatCV %>% filter(fold == i)
+  
+  # Fit the model on training data
+modCV <- glm(MassChange ~ DietDiv + Year + DomSpp, family = gaussian(link = "identity"), data = Data_Q1)
+  
+  # Predict on the test data
+  predictions <- predict(modCV, newdata = test_data)
+  
+  # Compute RMSE for this fold
+  actuals <- test_data$MassChange
+  rmse_values[i] <- sqrt(mean((predictions - actuals)^2))
+}
+
+# Summarize
+rmse_values
+mean_rmse <- mean(rmse_values)
+cat("Average RMSE across", k, "folds:", round(mean_rmse, 2), "\n")
+```
+
+The average root mean squared error is 15.98, indicating the model generally predicts values within 16 kg of the true value. Check the standard deviation to compare the average RMSE to:
+
+```{r}
+sd(Data_Q1$MassChange)
+```
+
+Compared to the standard deviation of mass change, the RMSE value is about 40% lower than the standard deviation, meaning the model predictions are much better than using the population mean to predict mass change. However, compared to the overall mean mass change within our dataset (28.5 kg), there is relatively large prediction error. We can also visualize prediction accuracy with a fitted vs observed value plot (figure 2):
+
+```{r}
+fit_mom <- fitted(mom_mod2)
+
+# Get the observed response variable (actual values)
+obs_mom <- Data_Q1$MassChange
+
+# Plot the fitted vs. observed values
+ggplot(data = Data_Q1, aes(x = fit_mom, y = obs_mom)) +
+  geom_point(color = "black") +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +  # Add 1:1 line
+  labs(
+    title = "Figure 2. Fitted vs. Observed Values with 1:1 line",
+    x = "Fitted Values",
+    y = "Observed Values"
+  ) +
+  theme_minimal()
+
+```
+
+While figure 2 shows that the model predictions have consistent accuracy across the range of fitted values, as suggested by the average RMSE value obtained from cross-validation, there is reasonably large prediction error. Given that the model residuals suggest good model fit, the relatively large prediction error suggest the set of covariates used in this model are not sufficient in predicting maternal mass change. From this we can conclude that females who feed on redfish, sand lance, or cod experience greater mass change than individuals who feed on Pollock, but other factors outside of maternal diet, such as individual physiology or characteristics associated with individual foraging behavior, are responsible for explaining a large proportion of variation in maternal mass change.
