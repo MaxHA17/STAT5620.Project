@@ -27,11 +27,15 @@ Data_Q1 <- Data_Q1 %>%
 #Check number of observations for each dominant prey species
 table(Data_Q1$DomSpp)
 
+
+#With only 3 observations of capelin and 1 observation of white hake, these individuals may have to be removed
 #remove white hake since there is only 1 observation
 Data_Q1 <- Data_Q1 %>%
   filter(DomSpp != "WhiteHake")
 
-#With only 3 observations of capelin and 1 observation of white hake, these individuals may have to be removed
+Data_Q1 <- Data_Q1 %>%
+  filter(DomSpp != "Capelin")
+
 
 ##plot and explore the data
 library(STAT5620.Project)
@@ -52,33 +56,22 @@ mom_mod <- glm(data=Data_Q1, family = gaussian(link="identity"), formula = MassC
 
 summary(mom_mod)
 
-#The initial model suggests that individuals with capelin or pollock as the dominant prey species gain less mass during foraging. Note that these were the species with few observations.
+#The initial model suggests that individuals with  pollock as the dominant prey species gain less mass during foraging. Note that these were the species with few observations.
 
 #Check residuals
 par(mfrow = c(2, 2))
 plot(mom_mod)
 
-#The q-q plot suggests model fit is not great. The values cannot be log transformed because many are negative. Try adding a constant value (the largest negative number) to all mass values
-Data_1 <- Data_Q1
-Data_1$MassChange <- Data_Q1$MassChange + 50
 
-#Repeat the analysis with a log link function
-mom_mod <- glm(data=Data_1, family = gaussian(link="log"), formula = MassChange ~ DietDiv + (1+DietEngDen) + Year + DomSpp)
-
-summary(mom_mod)
-
-par(mfrow = c(2, 2))
-plot(mom_mod)
-
-#This greatly improved the residual plots
+#Residual plots do not show any clear signs of homoscedasticty or deviations from normally distributed residuals.
 
 #Now use step selection function to find the best model
 step(mom_mod, direction = "both")
 
 #The lowest AIC model removes energy density. Rerun the glm with the lowest AIC model
 
-mom_mod2 <- glm(formula = MassChange ~ DietDiv + Year + DomSpp, family = gaussian(link = "log"),
-                data = Data_1)
+mom_mod2 <- glm(formula = MassChange ~ DietDiv + Year + DomSpp, family = gaussian(link = "identity"),
+                data = Data_Q1)
 
 summary(mom_mod2)
 plot(mom_mod2)

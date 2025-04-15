@@ -90,9 +90,9 @@ int <- pup_mod2$coefficients['(Intercept)']
 intE <- exp(int)
 
 ##calculate the mean % difference in pup weaning mass per each dominant prey species
-coef_estimates <- coef(summary(pup_mod2))[, "Estimate"]
-response_scale_coefs <- exp(coef_estimates)
-print(response_scale_coefs)
+#coef_estimates <- coef(summary(pup_mod2))[, "Estimate"]
+#response_scale_coefs <- exp(coef_estimates)
+#print(response_scale_coefs)
 
 #Redfish
 coefRed <- pup_mod2$coefficients['DomSppRedfish']
