@@ -1,7 +1,8 @@
 ---
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 72
+output: pdf_document
 ---
 
 ## **Linking Diet and Reproductive Success in Northwest Atlantic Grey Seals**
@@ -15,7 +16,7 @@ Link to GitHub Repository: <https://github.com/MaxHA17/STAT5620.Project>
 ### **Abstract:**
 
 **Keywords:** Capital breeding strategy, Generalized Linear Models,
-Pinnipeds, Quantitative Fatty AcidSignature Analysis, Reproductive
+Pinnipeds, Quantitative Fatty Acid Signature Analysis, Reproductive
 Ecology
 
 ### **Introduction:**
