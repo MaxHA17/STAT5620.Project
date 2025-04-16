@@ -1,0 +1,1080 @@
+---
+title: "STATS5620_Q2_Analysis"
+format: html
+editor: visual
+---
+
+# STAT 5620 Project Outline
+
+**Linking Diet and Reproductive Success in Northwest Atlantic Grey Seals**
+
+Max Henry-Adams (B00952295) and Peter Braithwaite (B00504978)
+
+Data Analysis STAT 4620/5620 Winter 24-25”
+
+Link to GitHub Repository: <https://github.com/MaxHA17/STAT5620.Project>
+
+**Abstract:**
+
+**Keywords:** Capital breeding strategy, Generalized Linear Models, Pinnipeds, Quantitative Fatty Acid Signature Analysis, Reproductive Ecology
+
+# Introduction
+
+For marine predators, prey distribution may vary unpredictably in time and space, undergoing seasonal, inter annual, and longer-term changes in environmental conditions. Understanding how top predators use different foraging strategies to navigate and adapt to patchy and unpredictable prey availability has important implications for individual fitness and population dynamics, yet studies exploring the consequences of such decisions on fitness are relatively rare (Nathan et al., 2008).
+
+Vertebrates fuel the costs of reproduction along a continuum of an income-capital breeding strategy, where animals that use an income breeding strategy rely on concurrent energy accumulation during the breeding period as opposed to a capital breeding strategy, where energy acquired and stored prior to the breeding period is used solely to finance major reproductive costs (Stephens et al., 2009; Stephens et al., 2014). A capital breeding strategy is thought to be advantageous for large animals capable of carrying large energy stores and offers energetic benefits in areas of patchy or unreliable food availability and allows parents to direct more resources (e.g. time and energy) towards offspring, as opposed to foraging, during the breeding and lactation period (Stephens et al., 2009; Stephens et al., 2014). Given the importance of pre-breeding and lactation period foraging success and energy acquisition in capital breeders, these species offer interesting model systems to study the relationships between diet and reproductive success.
+
+Phocid seals are wide-ranging, large-bodied, and long-lived marine predators, with individuals of many species foraging across a wide range of habitats over large temporal scales (Bowen and Jonsen, 2022). Grey seals (*Halichoerus grypus*) are a long-lived, sexually dimorphic, phocid species and are capital breeders. In the Sable Island population, pregnant females haul out in late December or early January, give birth to a single pup and nurse that pup for 16-18 days, relying solely on energy accumulated during the foraging period prior to parturition to support the costs of lactation (Iverson et al., 1993; Stephens et al., 2009). At or near the abrupt weaning of that pup, females are mated and return to sea to replenish spent body reserves and, after a several month period of delayed implantation, to support gestation and most importantly preparation for the subsequent December or early January lactation period. As in all mammals, the costs of lactation, and its contribution to reproductive success, far exceed the costs of gestation. Like most other phocids, grey seals are generalist predators (Bowen and Jonsen, 2022), but females tend to feed on a narrower range of energy rich species (predominantly sand lance, redfish, and other pelagic fishes) following the lactation period and expand their prey diversity in the several months leading up to the December-January breeding and lactation period (Beck et al., 2007). Female grey seals reach sexual maturity at age 4-5 years and can continue to reproduce as late as into their early 40s (Bowen et al., 2006). During the brief 16–18-day lactation period, females utilize approximately 25-38% of parturition body mass and daily maternal mass loss is a significant predictor of pup growth rates during lactation, with heavier mothers at parturition weaning heavier pups (Iverson et al., 1993; Mellish et al., 1999). While pup survival is positively related to pup weaning mass up to the mean population weaning mass of 51.5 kg, body length at weaning is the best predictor of grey seal pup survival, as predicted by a bigger-is-better hypothesis for size selective mortality (Bowen et al., 2015). The phenomena of heavier females weaning larger offspring is evident even from primiparity where it is believed that heavier females have larger resource stores that they can mobilize during lactation to produce larger offspring at weaning (Iverson et al., 1993; Mellish et al., 1999; Bowen et al., 2006). Following the lactation period, parental care abruptly ends and the pup is left to fast and survive for several weeks on the energy acquired during lactation before undertaking its first foraging trip (Noren et al., 2008). Thus, answering questions relating to the diet of females prior to parturition will improve our understanding of the importance of habitat use and energy acquisition as they relate to life history characteristics, such as reproductive success, in these capital breeders.
+
+Northwest Atlantic grey seals breeding on Sable Island, Nova Scotia, tend to be central place foragers and have high fidelity to Sable Island for breeding and as a haul-out site, making them excellent candidates for long-term studies (Bowen et al., 2015). Using diet estimations methods, such as quantitative fatty acid (FA) signature analysis (QFASA; Iverson et al., 2004, Beck et al., 2007), it becomes possible to explore the relationship between diet variation and reproductive success at the individual level. QFASA is used to estimate predator diet by comparing the FA signatures of predator adipose tissue to those of candidate prey species (Iverson, 2009; Karnovsky et al., 2012). Predator FA signatures alone have historically been used to provide a qualitative assessment of spatial and temporal patterns in diet diversity. However, since many FAs that are biosynthesized within unique prey species accumulate in predator adipose tissue over time, evaluating the amount of prey-specific FAs relative to the predator’s overall FA stores can provide a quantitative estimate of diet, known as QFASA (Iverson et al., 2004). For accurate diet estimation, species-specific calibration coefficients must be experimentally derived to account for the altered incorporation of prey FAs into the predator adipose tissue due to lipid metabolic processes within the predator (Iverson et al., 2004; Karnovsky et al., 2012). When calibration coefficients are derived and the FA signature of many or all potential prey species in an ecosystem is known, as in the case of the Northwest Atlantic grey seal range (Iverson et al., 2004; Beck et al., 2007), QFASA can provide a statistical approach to accurately depicting diet and prey diversity over ecologically relevant time scales (e.g., weeks to several months).
+
+This study will test the hypothesis that differences in diet will affect an individual’s ability to store energy prior to parturition, and thus influence their reproductive success. Specifically, we will explore two research questions:
+
+1.  Does variation in diet influence maternal mass change over the foraging period leading up to parturition in Northwest Atlantic grey seals?
+
+2.  Does female diet predict pup weaning mass in Northwest Atlantic grey seals?
+
+## Data description
+
+*Response variables (organized by research question):*
+
+1.  Maternal mass change during the pre-breeding season foraging period: continuous variable ranging from -45 – 88 kg. Calculated by subtracting the maternal recovery mass from her deployment mass.
+
+2.  Pup weaning mass: continuous variable ranging from 34.5 – 63 kg. Denotes the mass of the pup after the mother has terminated the lactation period and departed the pup and/or Sable Island.
+
+## Predictor or supporting variables
+
+3.  Year: discrete variable with values ranging from 1996-2015. Denotes the year in which each observation was collected.
+
+4.  Maternal ID: discrete variable with a unique identifier for each individual female.
+
+5.  Pup sex: categorical; male or female.
+
+6.  Maternal age: discrete variable with values ranging from 7-40 years old.
+
+7.  Maternal deployment mass: continuous variable with values ranging from 116 – 250 kg. Describes the female mass when she was located pregnant on Sable Island 3-6 months prior to parturition and prior to undergoing her pre-parturition foraging period.
+
+8.  Maternal mass at parturition: continuous variable ranging from \~ 137 – 250 kg. This is the mass of the female after returning to Sable Island and giving birth to her pup.
+
+9.  Maternal dominant prey species: discrete variable with 6 unique values. Represents the species making up the greatest proportion of the female diet.
+
+10. Maternal dietary energy density: continuous variable ranging from 4.88 – 6.51 kJ/g. Energy density (kJ/g) of the female diet is calculated from the average energy content per gram of prey body tissue.
+
+11. Maternal diet diversity: continuous variable 0.18 – 0.58, no specific units. Diversity is calculated using a standardized Shannon-Weaver diversity index to quantify individual diet diversity.
+
+# Method
+
+The initial step was data cleaning to ensure all readily apparent data errors were rectified prior to data analysis and model fitting. Most of the data errors discovered resulted from the absence of critical data and thus these observations were removed from the dataset. The first question dataset resulted an initial dataset of 56 observations (n=56) and the second question resulted in 76 observations (n=76). It should also be noted that additional observations were filtered from the dataset throughout the analysis process as = outliers with high leverage were also removed. Thus, the final dataset used for question one had 72 observation and the final dataset for question two had 50 observations.
+
+Once cleaned and uploaded to RStudio, initial data plots were made using the ‘flexplot’ and ‘plot_explore,’ the R function we have included in our Git Hub. These visualizations facilitated the exploration of variable distributions, specifically the response variables. From this it was determined that the response variables for both questions, Maternal Mass Change and Pup Weaning Mass, were Gaussian distributed. This normality allowed the exploration of the data through General Linear Models as well as more complex Generalized Linear Models and Mixed Models. Although our original analytical approach proposal Generalized Linear Mixed Models, it felt prudent to explore the efficiency, interpret ability and computational simplify of Linear Models if the assumption were met and the data suggested linearity.
+
+As a result, both questions were analysed first as Linear Models (LM), then as Generalized Linear Models (GLM) with Gaussian distributions, and finally as Generalized Linear Mixed Models (GLMM) with Random Effects and Fixed Effects on some and all the categorical data. With each model type we began with all the predictor variables prior to using the backward and forward “Step” function to reduce the number of variables through elimination based on the p-values for Linear Models and AIC for GLM and GLMM.
+
+Once we had established the best fit model for both questions using the AIC these models were tested using Cross Validation, question one with 7 folds and question two with 11 folds.
+
+# Analysis
+
+## Research Question 1
+
+Here we are exploring whether variation in diet influence maternal mass change over the foraging period leading up to parturition in Northwest Atlantic grey seals?
+
+The response variable of interest is maternal mass change. We will first look at the distribution of this variable:
+
+```{r}
+#Load the data
+library(readr)
+Data_Q1<- read.csv("/Users/peterbraithwaite/Desktop/IDPhD Classes/Stat 5620_Updated/Final Project/Proposal Presentation/Working Folder/R/Processed_Data/Data_Q1.csv", header = T)
+
+#Ensure the data types are correctly assigned
+Data_Q1$MomID <- as.factor(Data_Q1$MomID)
+Data_Q1$Year <- factor(Data_Q1$Year, levels = sort(unique(Data_Q1$Year)), ordered = TRUE)
+Data_Q1$`Dominant.prey.species`<- as.character(Data_Q1$`Dominant.prey.species`)
+Data_Q1$`Diet.diversity` <- as.numeric(Data_Q1$`Diet.diversity`)
+Data_Q1$`Dietary.energy.density` <- as.numeric(Data_Q1$`Dietary.energy.density`)
+
+summary(Data_Q1)
+
+#rename columns
+library(dplyr)
+Data_Q1 <- Data_Q1 %>%
+  rename(
+    DietEngDen = `Dietary.energy.density`,
+    DietDiv = `Diet.diversity`,
+    DomSpp = `Dominant.prey.species`,
+    MassChange = `Mass.change`)
+
+hist(Data_Q1$MassChange)
+```
+
+There are a total of n=76 observations and mass change appears to follow a normal distribution a Gaussian family distribution is a good starting point for an initial model.
+
+One of the covariates, dominant prey species, is a categorical variable. We will first check the number of observations in each category:
+
+```{r}
+table(Data_Q1$DomSpp)
+```
+
+With only one observation of white hake and 3 observations of capelin, there is likely not enough data to estimate the effect of these species on the response variable and we are unable to draw meaningful conclusions. These points also cause extreme residual values. Capelin and white hake observations will be removed from the data set:
+
+```{r}
+Data_Q1 <- Data_Q1 %>%
+  filter(DomSpp != "WhiteHake")
+
+Data_Q1 <- Data_Q1 %>%
+  filter(DomSpp != "Capelin")
+```
+
+The initial model seeks to model maternal mass change as a function of dominant prey species, diet diversity, dietary energy density, and deployment year. We will now explore the apparent relationships between each continuous and categorical covariate using the plot_explore function built and contained in the STAT5620.Project R package:
+
+Initially, it appears that diet diversity is negatively related to mass change, with energy density possibly having a slight negative relationship. It also appears that animals with cod, redfish or sand lance as the dominant prey species gain more mass during foraging than females who primarily prey on Pollock. There does not appear to be any clear trends in mass change over time.
+
+We will begin with an initial model with all covariates of interest. Based on the distribution of mass change, we will begin with a simple model with a gaussian distribution and an identity link function:
+
+```{r}
+library(lme4)
+mom_mod <- glm(data=Data_Q1, family = gaussian(link="identity"), formula = MassChange ~ DietDiv + DietEngDen + Year + DomSpp)
+
+par(mfrow = c(2, 2))
+plot(mom_mod)
+```
+
+The residual plots from this initial model show good homoscedasticity and normality. There is one observation (observation 6) that appears to be an extreme value. This observation comes from a female that experiences an 88 kg increase in mass over the pre-breeding period foraging period, which is well above the mean mass change value of 28.5. However, none of the covariate values associated with this observation are abnormal and this point does not have high leverage. As a results, the decision is to retain this data point since it is not highly influential and knowledge of the system suggests it is a valid data point.
+
+We can now use step selection to preform repeated hypothesis tests for variable selection to determine which covariates best explain maternal mass change while minimizing model complexity and colinearity between covariates.
+
+```{r}
+step(mom_mod, direction = "both")
+```
+
+The lowest AIC model drops the dietary energy density covariate. We will update the initial model to drop the energy density covariate:
+
+```{r}
+mom_mod2 <- glm(formula = MassChange ~ DietDiv + Year + DomSpp, family = gaussian(link = "identity"),
+                data = Data_Q1)
+plot(mom_mod2)
+```
+
+All model residuals still look good. We can proceed to interpreting model output:
+
+```{r}
+summary(mom_mod2)
+```
+
+While several years have mass change values that significantly differ from the expected mass change value, the effect of time is not of direct interest to our research question and is only present to account for changes in prey dynamics over time. As a result, the interpretation of this output is not relvant. However, we see that females who feed primarily on pollock experience lower mass change than the reference level, in this case being females who primarily feed on cod. Being an identity link function, the model is essentially a simple linear model and there is no transformations applied to the response variable. As such, coefficient estimates can be interpreted directly. In this case, individuals who feed on pollock experience 47.5% lower mass change than individuals who primarily feed on cod. This effect is presented in figure 1.
+
+```{r}
+require(ggplot2)
+ggplot(Data_Q1, aes(x = DomSpp, y = MassChange, fill = DomSpp)) +
+  geom_boxplot() +
+  stat_summary(
+    fun = "mean", geom = "errorbar",
+    aes(ymax = ..y.., ymin = ..y..),  
+    width = 0.75, color = "red", size = 1.2  
+  ) + geom_text(x = "Pollock", y = 20, label = "*",  
+                aes(x = x, y = y, label = label),  
+                color = "black", size = 6, fontface = "bold"
+  ) +
+  labs(
+    title = "Figure 1. Median (black line) and mean (red line) mass change by dominant prey species",
+    x = "Prey species",
+    y = "Mass change (kg)", fill = "Dominant prey species"
+  ) +
+  theme_minimal() + theme(
+    axis.line = element_line(color = "black", size = 1),  # Add axis lines
+    axis.text.x = element_text(size = 12, angle = 45, hjust = 1)
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, max(Data_Q1$MassChange), by = 25) - 50
+  )
+
+```
+
+It may also be worth noting that diet diversity is almost significant at p = 0.0556. While this p-value is not significant, the negative relationship between diet diversity and mass change may support the observed effects of dominant prey species, where individuals who primarily prey on cod, sand lance, or redfish and have a lower diet diversity due to this focus on a few profitable species are more successful in gaining mass than individuals who feed on a more diverse array of prey species which include less profitable species.
+
+We can perform cross-validation to to test this models predictions. In order to have each fold represent about 10% of the data, we will perform 7 fold cross validation:
+
+```{r}
+set.seed(123)
+
+#Number of folds
+k <- 7
+
+# Split the data into folds
+DatCV <- Data_Q1 %>% mutate(fold = sample(rep(1:k, length.out = n())))
+
+# Create a vector to store RMSE for each fold
+rmse_values <- numeric(k)
+
+#Perform cross validation
+for (i in 1:k) {
+  train_data <- DatCV %>% filter(fold != i)
+  test_data  <- DatCV %>% filter(fold == i)
+  
+  # Fit the model on training data
+modCV <- glm(MassChange ~ DietDiv + Year + DomSpp, family = gaussian(link = "identity"), data = Data_Q1)
+  
+  # Predict on the test data
+  predictions <- predict(modCV, newdata = test_data)
+  
+  # Compute RMSE for this fold
+  actuals <- test_data$MassChange
+  rmse_values[i] <- sqrt(mean((predictions - actuals)^2))
+}
+
+# Summarize
+rmse_values
+mean_rmse <- mean(rmse_values)
+cat("Average RMSE across", k, "folds:", round(mean_rmse, 2), "\n")
+```
+
+The average root mean squared error is 15.98, indicating the model generally predicts values within 16 kg of the true value. Check the standard deviation to compare the average RMSE to:
+
+```{r}
+sd(Data_Q1$MassChange)
+```
+
+Compared to the standard deviation of mass change, the RMSE value is about 40% lower than the standard deviation, meaning the model predictions are much better than using the population mean to predict mass change. However, compared to the overall mean mass change within our dataset (28.5 kg), there is relatively large prediction error. We can also visualize prediction accuracy with a fitted vs observed value plot (figure 2):
+
+```{r}
+fit_mom <- fitted(mom_mod2)
+
+# Get the observed response variable (actual values)
+obs_mom <- Data_Q1$MassChange
+
+# Plot the fitted vs. observed values
+ggplot(data = Data_Q1, aes(x = fit_mom, y = obs_mom)) +
+  geom_point(color = "black") +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +  # Add 1:1 line
+  labs(
+    title = "Figure 2. Fitted vs. Observed Values with 1:1 line",
+    x = "Fitted Values",
+    y = "Observed Values"
+  ) +
+  theme_minimal()
+
+```
+
+While figure 2 shows that the model predictions have consistent accuracy across the range of fitted values, as suggested by the average RMSE value obtained from cross-validation, there is reasonably large prediction error. Given that the model residuals suggest good model fit, the relatively large prediction error suggest the set of covariates used in this model are not sufficient in predicting maternal mass change. From this we can conclude that females who feed on redfish, sand lance, or cod experience greater mass change than individuals who feed on Pollock, but other factors outside of maternal diet, such as individual physiology or characteristics associated with individual foraging behavior, are responsible for explaining a large proportion of variation in maternal mass change.
+
+## Research Question 2
+
+## Does variation in diet of maternal female predict pup weaning mass in Northwest Atlantic grey seals?
+
+## Load Data
+
+require(tinytex) quarto install tinytex
+
+Cleaned data file was uploaded. seal_data = read.csv("Data_Q2.csv", header = T)
+
+```{r}
+seal_data <- read.csv("/Users/peterbraithwaite/Desktop/IDPhD Classes/Stat 5620_Updated/Final Project/Proposal Presentation/Working Folder/R/Processed_Data/Data_Q2.csv", header = T)
+summary(seal_data)
+```
+
+## Data Exploration
+
+The package "flexplot" was used to explore the predictor and response variables.
+
+```{r}
+
+require(flexplot)
+  
+a = flexplot (MomID~1, data= seal_data)
+b = flexplot (Year~1, data= seal_data)
+c = flexplot (Dietary.energy.density~1, data= seal_data)
+d = flexplot (Diet.diversity~1, data= seal_data)
+e = flexplot (Dominant.prey.species~1, data= seal_data)
+f = flexplot (Mom.Age~1, data= seal_data)
+g = flexplot (Pup.sex~1, data= seal_data)
+h = flexplot (Pup.Wean.Mass~1, data= seal_data)
+
+require (cowplot)
+plot_grid(a,b,c,d,e,f,g,h)
+
+
+```
+
+#### Figure 1 - Exploring Variable Distributions
+
+From the plots above it seems that the response variable (Pup Wean Mass) has a Gaussian distribution.
+
+To further explore the relationship between variable the package "ggplot2" was used plot individual variables in relation to the repsonse variables.
+
+## Pup Wean Mass and Dietary Engery Density
+
+```{r}
+require(ggplot2)
+# Pup Wean Mass + Dietary.energy.density
+ggplot(seal_data) + geom_point(aes(Dietary.energy.density, Pup.Wean.Mass, color = Dominant.prey.species)) + labs(title = "Pup Wean Mass and Dietary Energy Density", x = "Dietary Energy Density (kJ/g of prey tissue)", y = "Pup Wean Mass (Kg)") + geom_smooth (aes(Dietary.energy.density, Pup.Wean.Mass), method="lm", se=T)
+
+
+```
+
+#### Figure 2 - Pup Wean Mass and Dietary Energy Density
+
+From this plot we can see a negative or inverse relationship between Pup Wean Mass and Dietary Energy Density. This indicates that maternal mothers that feed on prey species resulting in greater dietary energy density tend to have pups with a lower wean mass. This is somewhat at odds with what might have been expected. We might have expected the greater the dietary energy density of the materanl mother would result in heavier and ultimately more fit pups.
+
+We can also see that the Dominant Species Capelin has only three observation and one of these appears to be an outlier. It should also be noted that White Hake has only one observation and Atlantic Cod has only three. This lack of observations may be problematic while fitting a model and we may need to remove these Dominant Prey Species.
+
+## Pup Wean Mass and Dietary Engery Density
+
+```{r}
+# Pup Wean Mass + Diet Diveristy
+ggplot(seal_data) + geom_point(aes(Diet.diversity, Pup.Wean.Mass, color = Dominant.prey.species)) +
+  labs(title = "Pup Wean Mass and Diet Diversity", x = "Diet Diveristy (no specific units for Shannon index)", y = "Pup Wean Mass (Kg)") +
+  geom_smooth(aes(Diet.diversity, Pup.Wean.Mass), method="lm", se=T)
+```
+
+#### Figure 3 - Pup Wean Mass and Diet Diversity
+
+From this plot we can see a negative or inverse relationship between Pup Wean Mass and Diet Diversity. This indicates that as the maternal mothers feed on more diverse prey species their pup wean mass decreases. This may indicates that mothers that reduce the diversity of their diet have healthier and more fit pups.
+
+## Pup Wean Mass + Year
+
+Exploring if specific years showed abnormally high or low Pup Wean Mass and if these were related to specific dominant prey species.
+
+```{r}
+ggplot(seal_data) + geom_point(aes(Year, Pup.Wean.Mass, color = Dominant.prey.species)) +
+  labs(title = "Pup Wean Mass and Year", x = "Year", y = "Pup Wean Mass (Kg)") +
+  geom_smooth (aes(Year, Pup.Wean.Mass), method="lm", se=T)
+```
+
+#### Figure 4 - Pup Wean Mass and Year
+
+From this plot it seems Pup Wean Mass seems to be fairly evenly distributed over the observed years and it does not seem that a specific Dominant Prey Species had a disproportionate effect on the Pup Wean Mass.
+
+## Pup Wean Mass + MomID
+
+Exploring if Pup Wean Mass shows significant differences based on the maternal mother ID.
+
+```{r}
+ggplot(seal_data) + geom_point(aes(MomID, Pup.Wean.Mass, color = Year )) +
+  labs(title = "Pup Wean Mass and Mom ID", x = "Mom ID", y = "Pup Wean Mass (Kg)") +
+geom_smooth(aes(MomID, Pup.Wean.Mass), method="lm", se=T)
+
+```
+
+#### Figure 5 - Pup Wean Mass and Materianl Mother ID
+
+With the vertical rows of the this plot representing unique maternal mothers, it does not seem any individual is creating disproportionately large or small pup weights. Rather, it seems most maternal mother are creating a fairly evenly distribution of pup weights dependent on the year.
+
+## Pup Wean Mass + Dominant Prey Species
+
+```{r}
+ggplot(seal_data) + geom_point(aes(Dominant.prey.species, Pup.Wean.Mass, color = Year )) + labs(title = "Pup Wean Mass and Dominant Prey Species", x = "Dominant Prey Species", y = "Pup Wean Mass (Kg)")
+```
+
+#### Figure 6 - Pup Wean Mass and Dominant Prey Species
+
+A considerable amount of insight can be gained from this plot including: The Dominant Prey Species with the largest number of observations (Northern Sandiance and Redfish) show a variety of Pup Wean Masses and these occur over a wide variety of years; the Dominant Prey Species with the smallest number of observations tend to show either predominantly large (Atlantic Cod and Capelin) or very small (Pollock and White Hake) Pup Wean sizes and these tend to occur in a variety of years.
+
+## Pup Wean Mass + Pup Sex
+
+```{r}
+ggplot(seal_data) + geom_point(aes(Pup.sex, Pup.Wean.Mass, color = Year )) +
+  labs(title = "Pup Wean Mass and Pup Sex", x = "Pup Sex", y = "Pup Wean Mass (Kg)") +
+  geom_smooth(aes(Pup.sex, Pup.Wean.Mass), method="lm", se=T)
+```
+
+#### Figure 7 - Pup Wean Mass and Pup Sex
+
+This plot shows that the Pup Sex seems to have little effect on the average Pup Mean Mass. Both Pup Sex seem to create a fairly even distribution of Pup Mean Mass over a variety of years. It is expected that this variable will have a small effect on the fit model.
+
+## Pup Wean Mass + Maternal Age
+
+```{r}
+ggplot(seal_data) + geom_point(aes(Mom.Age, Pup.Wean.Mass, colour = Dominant.prey.species)) +
+  labs(title = "Pup Wean Mass and Maternal Age", x = "Maternal Age", y = "Pup Wean Mass (Kg)") + geom_smooth(aes(Mom.Age, Pup.Wean.Mass), method="lm", se=T)
+```
+
+#### Figure 7 - Pup Wean Mass and Maternal Age
+
+A considerable amount of insight can be gained from this plot. It seems younger maternal seals have larger pups but it is also noteworthy that the majority of older mothers prey on the most observed Dominant Prey Species including Redfish and Northern Sandlance. Alternatively it seems less frequent observed Dominant Prey Species were preyed on by young maternal mothers. It seems as though there might be a social aspects to why younger mothers prey on less frequently observed Dominant Prey Species.
+
+# Fit Linear Model
+
+We now explore fitting general linear models to further explore the variables, the residuals and their relationships.
+
+First we convert the catagorical data to factors and determine the number of levels within each catagorical group.
+
+```{r}
+# convert catagorical data to factors 
+
+seal_data$MomID = as.factor(seal_data$MomID)
+seal_data$Year = as.factor(seal_data$Year)
+seal_data$Dominant.prey.species = as.factor(seal_data$Dominant.prey.species)
+seal_data$Pup.sex = as.factor(seal_data$Pup.sex)
+seal_data$Pup.Mom.Age = as.factor(seal_data$Mom.Age)
+
+nlevels(seal_data$MomID)
+# 51
+nlevels(seal_data$Year)
+# 13
+nlevels(seal_data$Dominant.prey.species)
+# 5
+nlevels(seal_data$Pup.sex)
+# 2
+nlevels(seal_data$Pup.Mom.Age)
+# 17
+```
+
+## Fit Linear Model
+
+### All Predictor Variables
+
+```{r}
+Q1 = lm(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity + Dietary.energy.density
+        + Year + Mom.Age + Pup.sex + MomID, data = seal_data)
+summary(Q1)
+```
+
+When this model is run we received an error suggesting we have more columns than rows. This suggest we have more variables than observations. As a result we must remove some of the categorical variables. The maternal mother ID seems to be adding a lot of categories (n -51) and did not seem very important in Figure 6 above. As a result Mom ID was removed and the model was fit again.
+
+### All Predictor Variables Except Mom ID
+
+```{r}
+Q2 = lm(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity + Dietary.energy.density + Year + Mom.Age + Pup.sex , data = seal_data)
+summary 
+
+# Adjusted R-squared:  0.209
+# p-value: 0.08393
+
+```
+
+Although this model was not significant, it did provide a model that works as a starting point for the Step Function.
+
+### Step Function (Forward)
+
+We now used the Step Function to determine the best fit model using AIC.
+
+```{r}
+fwd.model = step (Q2, direction='forward')
+```
+
+The forward step retained all variables with AIC = 216.76
+
+### Step Function (Backward)
+
+```{r}
+backward.model = step(Q2, direction='backward')
+```
+
+The backward step retained only the Dominant Prey Species and Diet Diversity variables with AIC 202.62.
+
+### Explore The Resulting Linear Model From Backward Step Function
+
+```{r}
+Q1_Reduced = lm(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity,
+                data = seal_data)
+summary(Q1_Reduced)
+
+# Adjusted R-squared: 0.2715 
+# p-value: 0.00121
+
+```
+
+This found that the redueced Linear Model is significant with a p-value = 0.00121 and an Adjusted R-Squared = 0.2715 meaning the model accounts for about 27% of the variation of the Pup Wean Mass. It should also be noted that the most significant variables are Pollock with a p-value of 0.000949 and White Hake with a p-value = 0.044627.
+
+We will now look at the residuals for the this model.
+
+# Explore Residuals for Reduced Linear Model
+
+```{r}
+library(ggfortify)
+autoplot(Q1_Reduced)
+```
+
+#### Figure 8 - Residual for Reduced Variables Linear Model
+
+```{r}
+#residuals 
+res = resid(Q1_Reduced)
+plot(fitted(Q1_Reduced), res)
+abline(0,0)
+```
+
+#### Figure 9 - Residual for Reduced Variables Linear Model
+
+```{r}
+ggplot(Q1_Reduced, aes(x = .fitted, y = .resid, colour = Dominant.prey.species )) + geom_point() 
+```
+
+#### Figure 10 - Residual for Reduced Variables Linear Model
+
+From these residual visualization it seems clear that a number observations seem to be outliers and they should be removed or we should try robust regression strategies. We can see from Figure 10 that it is the observation with White Hake and Pollock as the Dominant Prey Species are clearly outliers.
+
+We will now try to fit a robust regression first.
+
+```{r}
+require(robustbase)
+Q1_Reduced_Robust = lmrob(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity,
+                data = seal_data)
+summary(Q1_Reduced_Robust)
+```
+
+The robust regression returned a better Adjusted R-Squared = 2928 (appoximately 29% of variation) than the regular regression with that showed approximately 27%. Interestingly all the Dominant Prey Species are now significant coefficients except Capelin. We will now look at the residuals for the robust regression model.
+
+```{r}
+#residuals 
+res = resid(Q1_Reduced_Robust)
+plot(fitted(Q1_Reduced_Robust), res)
+abline(0,0)
+```
+
+#### Figure 11 - Residual for Reduced Variables with Robust Linear Model
+
+The residuals look a bit better but not a huge improvement over the linear model above. We will try removing the outlier observation. A new dataset was uploaded below with Pollock and White Hake Dominant Prey Species Removed.
+
+```{r}
+seal_data_2 <- read.csv("/Users/peterbraithwaite/Desktop/IDPhD Classes/Stat 5620_Updated/Final Project/Proposal Presentation/Working Folder/R/Processed_Data/Data_Q2_Reduced.csv", header = T)
+summary(seal_data_2)
+
+```
+
+### Re-fit Linear Model with Reduced Data-set
+
+Removed Pollock and White Hake from Data-set
+
+```{r}
+Q3_Full= lm(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity + Dietary.energy.density + Year + Mom.Age + Pup.sex , data = seal_data_2)
+ 
+summary(Q3_Full)
+# p-value: 0.3243
+# Adjusted R-squared:  0.03048 
+```
+
+### Step Function (Forward)
+
+We now used the Step Function to determine the best fit model using AIC.
+
+```{r}
+fwd.model = step (Q3_Full, direction='forward')
+```
+
+The forward step retained all variables with AIC = 190. It should be noted that this AIC is better than the best AIC 202.62 for the simple linear regression above.
+
+### Step Function (Backward)
+
+```{r}
+backward.model = step(Q3_Full, direction='backward')
+```
+
+The backward step retained the Diet Diversity and Dietary.energy.density variables with AIC 180.94. It should be noted that this AIC is better than the best AIC 202.62 for the simple linear regression above.
+
+### Explore Backward Step Linear Model
+
+```{r}
+Q3_Reduced = lm(Pup.Wean.Mass ~ Dietary.energy.density + Diet.diversity,
+                data = seal_data_2)
+summary(Q3_Reduced)
+# p-value: 0.029
+# Adjusted R-squared:  0.1012 
+```
+
+# Explore Residuals For Reduced DataSet Romoving White Hake and Pollock
+
+```{r}
+library(ggfortify)
+autoplot(Q3_Reduced)
+```
+
+#### Figure 12 - Residual for Reduced Dataset (White Hake and Pollock removed).
+
+```{r}
+
+ggplot(Q3_Reduced, aes(x = .fitted, y = .resid, color = seal_data_2$Dominant.prey.species )) + geom_point() 
+
+```
+
+#### Figure 13 - Residual for Reduced Dataset (White Hake and Pollock removed).
+
+The lowest value of Caplin is now an outlier and has very high leverage. It is most likely best to remove the lowest value of Capelin or remove the Capelin coefficient all together. Below we load a new dataset with the lowest value of Caplelin removed.
+
+```{r}
+seal_data_3 <- read.csv("/Users/peterbraithwaite/Desktop/IDPhD Classes/Stat 5620_Updated/Final Project/Proposal Presentation/Working Folder/R/Processed_Data/Data_Q2_Reduced_2.csv", header = T)
+summary(seal_data_2)
+
+```
+
+# Fit Full Model with Reduced Data Set
+
+Removed Lowest Value of Capelin species from data.
+
+```{r}
+Q4_Full= lm(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity + Dietary.energy.density + Year + Mom.Age + Pup.sex , data = seal_data_3)
+ 
+summary(Q4_Full)
+# p-value: 0.002236 
+# Adjusted R-squared:0.004332 
+```
+
+### Step Function (Forward)
+
+We now used the Step Function to determine the best fit model using AIC.
+
+```{r}
+fwd.model = step (Q4_Full, direction='forward')
+```
+
+The forward step retained all variables with AIC = 186.61.
+
+### Step Function (Backward)
+
+```{r}
+backward.model = step(Q4_Full, direction='backward')
+```
+
+The backward step retained the Diet Diversity and Dietary.energy.density variables with AIC=178.5. It should be noted that this the best AIC value so far.
+
+### Explore Best Backward Step Linear Model
+
+```{r}
+Q4_Reduced = lm(Pup.Wean.Mass ~ Dietary.energy.density + Diet.diversity,
+                data = seal_data_3)
+summary(Q4_Reduced)
+extractAIC(Q4_Reduced)
+# p-value: 0.08928
+# Adjusted R-squared:  0.0593 
+# AIC=178.496
+```
+
+# Explore Residuals
+
+```{r}
+library(ggfortify)
+autoplot(Q4_Reduced)
+```
+
+```{r}
+ggplot(Q4_Reduced, aes(x = .fitted, y = .resid, color = seal_data_3$Dominant.prey.species )) + geom_point() 
+```
+
+#### Figure 16 - Residual for Reduced Dataset (White Hake and Pollock removed completely and lowest value of Capeline).
+
+From this figure it seems we have a fairly balanced residuals now. Although Northerbn Sandlance is show some extreme values (both large and small) for risk of overfitting the model we will stop removing variables and observations.
+
+Now, since this is a General Linear Model and not a Generalized Linear Model we will need to check for the assumptions including linearity, independence of errors, homoscedasticity, and normality.
+
+# Testing Assumptions
+
+### Checking for Normality
+
+```{r}
+qqnorm(Q4_Reduced$residuals) 
+```
+
+Q-Q plot appears to show normality
+
+```{r}
+hist(Q4_Reduced$residuals)
+```
+
+Histogram appears to show normality
+
+### Shapiro-Wilk's Test
+
+```{r}
+shapiro.test(Q4_Reduced$residuals)
+```
+
+From this W = 0.98681 and p-value = 0.8456. Given the p-value is not significant their is not a variation of the assumption of normality.
+
+From these 3 explorations we are now confident in normality of the data.
+
+### Checking for Homogeneity of Variance
+
+Using Breusch_Pagan Test
+
+```{r}
+require (lmtest)
+bptest(Q4_Reduced)
+# BP = 2.0797
+# df = 2
+# p-value = 0.3535
+```
+
+Thus the p-value is greater then 0.05 so we accept the null hypothesis and assume we have homoscedasticity.
+
+### Checking for Independence of Predictor Variables
+
+Using the Dublin-Watson
+
+```{r}
+dwtest(Q4_Reduced)
+# DW = 2.2815
+# p-value = 0.792
+```
+
+This p-value suggests very little to no autocorrelation.
+
+### Checking for Correlation of the Variables
+
+#### Graphically Explore for Correlation
+
+```{r}
+pairs( ~Diet.diversity + Dietary.energy.density, data = seal_data_3)
+```
+
+Data points look random and not correlated.
+
+#### Numerically Explore for Correlation
+
+```{r}
+cor.test( ~Diet.diversity + Dietary.energy.density, data = seal_data_3)
+# t = -0.35989
+# df = 74
+# p-value = 0.72
+```
+
+From this we can conclude that the variables are not correlated.
+
+Thus, all our assumptions are met for the Linear Model and our findings can be accepted.
+
+# Generalized Linear Model
+
+Given we will be fitting a Gaussian (normal) distribution Generalized Linear Model it seeem safe to assume that the model will demonstrate the same data issues as the Linear Model with regard to residual outliers. For this reason we start with the reduced dataset that eliminated the the Dominant Prey Species White Hake, Pollock, and the lowest value of Capelin.
+
+### Fitting Full Generalized Linear Model (Gaussian Family)
+
+### All Predictor Variables
+
+```{r}
+GLM_1 = glm (Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity + Dietary.energy.density + Year + Mom.Age + Pup.sex + MomID, data = seal_data_3, family = gaussian)
+
+summary (GLM_1)
+# AIC = 328.9
+```
+
+From here we will use the GLM_1 model for the Step Funtion to reduce the number of predictor variables and increase the accuracy and efficiency of the model.
+
+### Step Function (Backward)
+
+```{r}
+backward.model = step(GLM_1, direction='backward')
+```
+
+The backward step retained the Diet Diversity and Dietary.energy.density variables with AIC AIC = 320.23. It should be noted this is the same predictor variables that were selected in the Step Function as the Linear Model but the AIC is much worse then the reduced Linear Model with AIC = 178.5. This is because the Linear Model is a less complex model and thus has a lower AIC.
+
+### Explore Backward Step Linear Model
+
+```{r}
+GLM_2 = glm(Pup.Wean.Mass ~ Dietary.energy.density + Diet.diversity,
+                data = seal_data_3, family = gaussian)
+summary(GLM_2)
+# AIC = 322.39
+```
+
+# Explore Residuals
+
+```{r}
+library(ggfortify)
+autoplot(GLM_2)
+```
+
+#### Figure 17 - Residual for Generalized Linear Model With Reduced Dataset
+
+As we might expect the residuals for this Gaussian Generalized Linear Model are very similar to the residuals for the Linear Model above.
+
+```{r}
+ggplot(GLM_2, aes(x = .fitted, y = .resid, color = seal_data_3$Dominant.prey.species )) + geom_point()
+```
+
+#### Figure 18 - Residual for Generalized Linear Model With Reduced Dataset
+
+Again, as we might expect the residuals for this Gaussian Generalized Linear Model are very similar to the residuals for the Linear Model above. Given the Generalized Linear Model is creating similar residuals with the a same predictor variables as the Linear Model but with a less desirable AIC (GLM = 322.39 vs. LM = 178.5), it\
+seems the more simple Linear Model should be used.
+
+# Fit Linear Mixed Model
+
+The Linear Model may benefit from Random Effects on the Dominant Prey Species variable given the different prey species would have an effect on the other two remaining variables, Dietary Energy Density and Diet Diversity.
+
+### Linear Mixed Model With Both Diet Diversity and Dietary Energy Loss Random Effects Based on Cluster Variable Dominant Prey Species
+
+```{r}
+require(lme4)
+
+GLMM_1 = lmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density +  (Dietary.energy.density | Dominant.prey.species ) + (Diet.diversity | Dominant.prey.species) , data = seal_data_3)
+
+summary(GLMM_1)
+extractAIC(GLMM_1)
+# AIC = 337.7947
+
+```
+
+### Linear Mixed Model With Dietary Energy Loss Random Effects Based on Cluster Variable Dominant Prey Species
+
+```{r}
+
+GLMM_2 = lmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density +  (Dietary.energy.density | Dominant.prey.species ), data = seal_data_3)
+
+summary(GLMM_2)
+extractAIC(GLMM_2)
+# AIC = 328.3899
+
+```
+
+### Linear Mixed Model With Diet Diversity Random Effects Based on Cluster Variable Dominant Prey Species
+
+```{r}
+
+GLMM_3 = lmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (Diet.diversity | Dominant.prey.species) , data = seal_data_3)
+
+summary(GLMM_3)
+extractAIC(GLMM_3)
+# AIC = 328.3899
+
+```
+
+### Linear Mixed Model With Intercept Random Effects Based on Cluster Variable Dominant Prey Species
+
+```{r}
+
+GLMM_4 = lmer(Pup.Wean.Mass ~  Diet.diversity + Dietary.energy.density + (1 | Dominant.prey.species) , data = seal_data_3)
+
+summary(GLMM_4)
+extractAIC(GLMM_4)
+# AIC = 324.3899
+
+```
+
+So, in summary, none of the Linear Mixed Models with Random Effect on the cluster variavble Dominant Prey Species resulted in a more desirable AIC. The best Mixed Model model had an AIC = 324.3899 but the best Linear Model had an AIC=178.496. Thus the less complex Linear Model is the most efficient and most accurate model.
+
+# Cross Validation LM
+
+It has been determined that a simple Linear Model using a maternal mother seal's Dietary Energy Density and Diet Diversity are the best predictor variables for Pup Wean Mass. The model lm(Pup.Wean.Mass \~ Dietary.energy.density + Diet.diversity, data = seal_data_3) has shown an AIC = 178.496.
+
+We will now use Cross Validation to assess how well we expect this model to preform when predicting future Pup Wean Mass changes.
+
+```{r}
+
+require(modelr)
+require(caret)
+require(readr)
+
+# Data
+attach(seal_data_3)
+
+# Set Random Seed
+set.seed(1980)
+
+# Create Index Matrix (80% train data and 20% test data )
+index = createDataPartition(seal_data_3$Pup.Wean.Mass, p = .8, list = FALSE, times = 1)
+
+summary(seal_data_3$Pup.Wean.Mass)
+print(seal_data_3$Pup.Wean.Mass)
+
+# Convert data frame
+data_frame = as.data.frame(seal_data_3)
+
+# Create a data frame for the train data that is 80%
+train_data_frame = data_frame[index,]
+
+# Create a data frame for the test data that is 20% ("-" before index mean everything but the 80%)
+test_data_frame = data_frame[-index,]
+
+# Convert response variable in both train and test data frame to a factor
+train_data_frame$Pup.Wean.Mass = as.factor (train_data_frame$Pup.Wean.Mass)
+test_data_frame$Pup.Wean.Mass = as.factor (test_data_frame$Pup.Wean.Mass)
+
+
+# Ensure the response variables classes are factors
+class (train_data_frame$Pup.Wean.Mass)
+# "factor"
+class (test_data_frame$Pup.Wean.Mass)
+# "factor"
+
+# Specify type of training method used and the number of folds
+control_specs = trainControl(method = "cv", number = 11 , savePredictions = "all")
+
+# Set Random Seed
+set.seed(1980)
+
+require(randomForest)
+
+# now we train the model with the best fit GLM above
+# GLM_Final = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = gaussian)
+
+
+model_cross = train(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity,
+                    method = "lm", data = seal_data_3, trControl = control_specs)
+
+print (model_cross)
+
+# 50 samples
+#  2 predictor
+
+#  RMSE      Rsquared    MAE
+# 5.434521  0.20213048  4.563434
+
+
+# We now apply the model to the test_data_frame we created from 20%
+# of the data that the new model created from the 11 folds has not yet seen
+
+# Predict outcome using model from train_data_frame applied to test_data_frame
+Predict_Data = predict (model_cross, newdata = test_data_frame)
+
+# predictions results
+
+#. 52.74225 51.24721 50.67234 57.30204 51.49974 49.31590 50.08707 48.16223 
+
+test_data_frame$Pup.Wean.Mass
+# 59   59.5 49   55   52.5 41.5 48   40  
+
+#Creates vectors having data points
+predicted_value <- (c(52.74225, 51.24721, 50.67234, 57.30204, 51.49974, 49.31590, 50.08707, 48.16223))
+expected_value <- (c(59, 59.5, 49, 55, 52.5, 41.5, 48, 40))
+
+
+Cross_Validation_Corrolation = cor (predicted_value, expected_value)
+
+### 0.6596914
+
+R2 = (Cross_Validation_Corrolation^2 )
+
+### 0.4351927 (43.52% of variance)
+```
+From this cross validation procedure we can see that the Linear Model has a validation score of about 0.66 which mean the Linear Model would do a fair job at predicting Pup Mean Mass based on the maternal mother seal's Dietary Energy Density and Diet Diversity. The estimated R-squared value suggests the model would account for about 43.5% of the variance of Pup Mean Mass.
+
+
+
+# Cross Validation GLM
+
+Cross Validation was explored for the best fit Generalized Linear Model. 
+
+```{r}
+
+require(modelr)
+require(caret)
+require(readr)
+
+# Data
+attach(seal_data_3)
+
+# Set Random Seed
+set.seed(1984)
+
+# Create Index Matrix (80% train data and 20% test data )
+index = createDataPartition(seal_data_3$Pup.Wean.Mass, p = .8, list = FALSE, times = 1)
+
+summary(seal_data_3$Pup.Wean.Mass)
+print(seal_data_3$Pup.Wean.Mass)
+
+# Convert data frame
+data_frame = as.data.frame(seal_data_3)
+
+# Create a data frame for the train data that is 80%
+train_data_frame = data_frame[index,]
+
+# Create a data frame for the test data that is 20% ("-" before index mean everything but the 80%)
+test_data_frame = data_frame[-index,]
+
+# Convert response variable in both train and test data frame to a factor
+train_data_frame$Pup.Wean.Mass = as.factor (train_data_frame$Pup.Wean.Mass)
+test_data_frame$Pup.Wean.Mass = as.factor (test_data_frame$Pup.Wean.Mass)
+
+
+# Ensure the response variables classes are factors
+class (train_data_frame$Pup.Wean.Mass)
+# "factor"
+class (test_data_frame$Pup.Wean.Mass)
+# "factor"
+
+# Specify type of training method used and the number of folds
+control_specs = trainControl(method = "cv", number = 11 , savePredictions = "all")
+
+# Set Random Seed
+set.seed(1984)
+
+require(randomForest)
+
+# now we train the model with the best fit GLM above
+# GLM_Final = glm (seal_data$Pup.Wean.Mass ~ seal_data$Dominant.prey.species + seal_data$Diet.diversity, family = gaussian)
+
+
+model_cross_2 = train(Pup.Wean.Mass ~ Dominant.prey.species + Diet.diversity,
+                    method = "glm", family = gaussian, data = seal_data_3, trControl = control_specs)
+
+print (model_cross_2)
+
+# 50 samples
+#  2 predictor
+
+#  RMSE      Rsquared    MAE
+# 5.816687  0.4291658  4.852387
+
+
+# We now apply the model to the test_data_frame we created from 20%
+# of the data that the new model created from the 11 folds has not yet seen
+
+# Predict outcome using model from train_data_frame applied to test_data_frame
+Predict_Data_2 = predict (model_cross_2, newdata = test_data_frame)
+
+# predictions results
+
+#. 52.74225 51.24721 50.67234 57.30204 51.49974 49.31590 50.08707 48.16223 
+
+test_data_frame$Pup.Wean.Mass
+# 59   59.5 49   55   52.5 41.5 48   40  
+
+#Creates vectors having data points
+predicted_value <- (c(52.43245, 52.14797, 52.30886, 51.25847, 57.08296, 50.11807, 49.97490, 49.99187))
+expected_value <- (c(59, 59.5, 49, 55, 52.5, 41.5, 48, 40))
+
+
+Cross_Validation_Corrolation = cor (predicted_value, expected_value)
+
+### 0.4533892
+
+R2 = (Cross_Validation_Corrolation^2 )
+
+### 0.2055618 (20.6% of variance)
+```
+
+
+From this cross validation procedure we can see that the Generalized Linear Model has a validation score of about 0.45 which mean the best fit GLM has a lower predictive accuracy then the Linear 
+Model. 
+
+# Results
+
+Although it was proposed that many predictor variables (2 continuous + 3 categorical for question one and 2 continuous + 5 categorical for question two) would allow greater computational potential to establish a well fit model, the added complexity of these variables was observed to significantly increase the AIC and potentially overfit the model. It was found, particularly in question two, that the simplicity of a Linear Model with a Least Square approach resulted in a simpler linear model with a significantly lower AIC.
+
+In question 2 it was found that best fit Linear Model for Pup Wean Mass included the predictor variables Dietary Energy Density and Diet Diversity with an AIC = 178.496. When a Generalized Linear Model was explored with a Gaussian Family and Identity Link Function it was also found that the best fit model included Dietary Energy Density and Diet Diversity predictor variable but the AIC was much less preferable at 322.39. The reasons for this decreased predicted fit is likely based on the more complex Maximum Likelihood Estimation used in Generalized Linear Models rather than the Linear Least Square method used in the Linear Models. Generalized Linear Mixed Models (GLMM) were also explored using the Dominant Prey Species as the Cluster Variable because it was assumed that this variable would likely have a effect on the prey energy density as well as the diet diversity based on feeding location ecosystems. The best fit GLMM was found to include Diet Diversity and Dietary Energy Density as fixed effects predictor variables and Dominant Prey Species as an intercept random effect variable which had a AIC of 324.3899. As a result it was determined that the best fit model to determine Pup Wean Mass was the Linear Model and this model was tested using Cross Validation. The correlation of predicted values to actual values showed a value of 0.6596914 meaning the Linear Model could be expected to predict Pup Wean Mass with about a 66 percent accuracy.
+
+# Conclusions
+
+In both question one, that explored the effect of diet on Maternal Mass Change, and question two, that explored the predictive ability of maternal diet on pup wean mass at partition, we found relatively large predictive errors in our models (33% for question two). Although the dataset provided many predictive variables, many of these were categorical data and only two, Dietary Energy Density and Diet Diveristy, where numeric in nature. In addition to this the number of observation in the dataset were limited (question one n=76, and question two n=56) which resulted in many rows of data but few columns with ultimately resulted in added complexity in our models and the need to reduce the number of predictor variable to prevent overfitting the model. 
+
+In question one the residuals suggest good model fit but the relatively large prediction error suggest the set of covariates used in this model are not sufficient in predicting maternal mass change or more observation would be required to fit a more reliable model. It was found from the data that females who feed on redfish, sand lance, or cod experience greater mass change than individuals who feed on Pollock, but other factors outside of maternal diet, such as individual physiology or characteristics associated with individual foraging behavior are likely responsible for a large proportion of variation in maternal mass change.
+
+In question two it was determined through both AIC and Cross Validation that the simpler Linear Model had a higher accuracy for predicting Pup Wean Mass with the two available numeric predictor variables. Access to additional observation could increase the predictive ability of the Linear Model as well as allow the fitting of more complex model such as a Mixed Model without overfitting. Although we feel the models provided fair accuracy in predicting Pup Wean Mass at partition, the lack of number of observations may have significantly impacted the reliability and validity of the statistical analysis. 
+
+
+# References
+
+#### Data source : Sara Iverson laboratory and DFO Grey Seal Program.
+
+Beck, C.A., Iverson, S.J., Bowen, W.D., and Blanchard, W. 2007. Sex differences in grey seal diet reflect seasonal variation in foraging behavior and reproductive expenditure: evidence from quantitative fatty acid signature analysis. J. Anim. Ecol. 76(3): 490–502.
+
+Bowen, W.D., Iverson, S.J., McMillan, J.I., and Boness, D.J. 2006. Reproductive performance in grey seals: age-related improvement and senescence in a capital breeder. J. Anim. Ecol. 75(6): 1340–1351.
+
+Bowen, W.D., den Heyer, C.E., McMillan, J.I., and Iverson, S.J. 2015. Offspring size at weaning affects survival to recruitment and reproductive performance of primiparous gray seals. Ecol Evol. 5(7): 1412-1424.
+
+Bowen, W.D. and Jonsen, I.D. 2022. Foraging Ecology and Behavior. In: Costa, D.P., McHuron, E.A. (eds) Ethology and Behavioral Ecology of Phocids. Ethology and Behavioral Ecology of Marine Mammals. Springer, Cham.
+
+Iverson, S.J., Bowen, W.D., Boness, D.J., and Oftedal, O.T. 1993. The Effect of Maternal Size and Milk Energy Output on Pup Growth in Grey Seals (Halichoerus grypus). Physiol. Zool. 66(1): 61–88.
+
+Iverson, S.J., Field, C., Bowen, W.D., and Blanchard, W. 2004. Quantitative fatty acid signature analysis: a new method of estimating predator diets. Ecol. Monogr. 74(2): 211-235.
+
+Iverson, S.J. 2009. Tracing aquatic food webs using fatty acids: from qualitative indicators to quantitative determination. In Lipids in aquatic ecosystems. Edited by M. Arts, M.T. Brett, and M. Kainz. Springer, New York. pp. 281–308.
+
+Karnovsky, N., Hobson, K.A., and Iverson, S.J. 2012. From lavage to lipids: Estimating diets of seabirds. Mar. Ecol. Prog. Ser. 451: 263-284.
+
+Mellish, J.E., Iverson, S.J., and Bowen, W.D. 1999. Variation in milk production and lactation performance in grey seals and consequences for pup growth and weaning characteristics. Physiol. Biochem. Zool. 72(6): 677–690.
+
+Nathan, R., Getz, W.M., Revilla, E., Holyoak, M., Kadmon, R., Saltz, D., and Smouse, P.E. 2008 A movement ecology paradigm for unifying organismal movement research. Proc. Natl. Acad. Sci. USA. 105(49): 19052–19059.
+
+Noren, S.R., Boness, D.J., Iverson, S.J., McMillan, J.I., and Bowen, W.D. 2008. Body condition at weaning affects the duration of the postweaning fast in gray seal pups (Halichoerus grypus). Physiol. Biochem. Zool. 81: 269–277.
+
+Stephens, P.A., Boyd, I.L., McNamara, J.M. and Houston, A.I. 2009. Capital breeding and income breeding: their meaning, measurement, and worth. Ecology. 90(8): 2057-2067. Stephens, P.A., Houston, A.I., Harding, K.C., Boyd, I.L. and McNamara, J.M. 2014. Capital and income breeding: the role of food supply. Ecology. 95(4): 882-896.
+
+
