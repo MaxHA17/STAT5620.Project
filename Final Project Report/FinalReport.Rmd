@@ -672,3 +672,14 @@ Capital breeding and income breeding: their meaning, measurement, and
 worth. Ecology. 90(8): 2057-2067. Stephens, P.A., Houston, A.I.,
 Harding, K.C., Boyd, I.L. and McNamara, J.M. 2014. Capital and income
 breeding: the role of food supply. Ecology. 95(4): 882-896.
+
+### Add all R packages used to the description file
+
+```{r}
+used_pkgs <- c("lme4", "here", "readr", "usethis")
+
+library(usethis)
+for (pkg in used_pkgs) {
+  try(use_package(pkg, type = "imports"), silent = TRUE)
+}
+```
