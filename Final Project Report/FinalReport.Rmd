@@ -5,7 +5,7 @@ editor_options:
 output: pdf_document
 ---
 
-## **Linking Diet and Reproductive Success in Northwest Atlantic Grey Seals**
+# **Linking Diet and Reproductive Success in Northwest Atlantic Grey Seals**
 
 Max Henry-Adams (B00952295) and Peter Braithwaite (B00504978)
 
@@ -13,13 +13,31 @@ Data Analysis STAT 4620/5620 Winter 24-25”
 
 Link to GitHub Repository: <https://github.com/MaxHA17/STAT5620.Project>
 
-### **Abstract:**
+## **Abstract:**
+
+Understanding how top predators use different foraging strategies to
+navigate and adapt to patchy and unpredictable prey availability has
+important implications for individual fitness and population dynamics.
+Here we explore the relationship between diet and reproductive success
+in a capital breeding pinniped, the northwest Atlantic grey seal
+(*Halichoerus grypus*) through two research questions: 1. Does variation
+in diet influence maternal mass change over the foraging period leading
+up to parturition in Northwest Atlantic grey seals; and 2. Does female
+diet predict pup weaning mass in Northwest Atlantic grey seals? Using
+linear models (LMs), generalized linear models (GLMs), and generalized
+linear mixed effects models (GLMMs), we found that females who primarily
+fed on pollock experienced lower mass change and pup weaning masses than
+those who primarily fed on cod, sand lance, or redfish. While models for
+both questions were well fit, model predictive errors were relatively
+high, possibly indicating that missing covariates outside of diet are
+playing a significant role in explaining maternal mass change and pup
+weaning mass.
 
 **Keywords:** Capital breeding strategy, Generalized Linear Models,
 Pinnipeds, Quantitative Fatty Acid Signature Analysis, Reproductive
 Ecology
 
-### **Introduction:**
+## **Introduction:**
 
 For marine predators, prey distribution may vary unpredictably in time
 and space, undergoing seasonal, inter-annual, and longer-term changes in
@@ -127,7 +145,7 @@ seals?
 2\. Does female diet predict pup weaning mass in Northwest Atlantic grey
 seals?
 
-### **Data Description**
+## **Data Description**
 
 *Response variables (organized by research question):*
 
@@ -177,7 +195,7 @@ seals?
     Shannon-Weaver diversity index to quantify individual diet
     diversity.
 
-### **Methods**
+## **Methods**
 
 The initial step was data cleaning to ensure all readily apparent data
 errors were rectified prior to data analysis and model fitting. Most of
@@ -187,55 +205,66 @@ removed from the data-set. As a result, the first question data-set
 resulted in 56 observations (n=56) and the second question resulted in
 76 observations (n=76). It should also be noted that additional
 observations were filtered from the data-set throughout the analysis
-process as resulting from outliers with high leverage. A description of
-outlier identificantion and removal can be found in the analysis section
-below. Thus, the final data-set used for question one had 72 observation
-and the final data-set for question two had 50 observations. Once
-cleaned and uploaded to RStudio, initial data plots were made using the
-‘flexplot’ and ‘plot_explore’ R function we have included in our Git
+process due to the identification of outliers with high leverage. A
+description of outlier identification and removal can be found in the
+analysis section below. Thus, the final data-set used for question one
+had 72 observation and the final data-set for question two had 50
+observations.
+
+Once cleaned and uploaded to RStudio, initial data plots were made using
+the ‘flexplot’ and ‘plot_explore’ R function we have included in our Git
 Hub. Description of 'plot_explore' function created in this R package
-can be found within the STAT5620.Project package. These visualizations
-facilitated the exploration of variable distributions, specifically the
-response variables. From this it was determined that the response
-variables for both questions, Maternal Mass Change and Pup Weaning Mass,
-were Gaussian distributed. This normality allowed the exploration of the
-data through General Linear Model sas well as more complex Generalized
-Linear Models and Mixed Models. Although our original analytical
-approach proposal Generalized Linear Mixed Models, it felt prudent to
-explore the efficiency, interpretability and computational simplify of
-Linear Models if the assumption were met and the data suggested
-linearity. As a result, both questions were analysed first as Linear
-Models (LM), then as Generalized Linear Models (GLM) with Gaussian
-distributions, and finally as Generalized Linear Mixed Models (GLMM)
-with random effects and fixed effects on some and all the categorical
-data. Initially, Maternal ID was to be included as a random effect to
-account for repated measured, individual heterogeneity and allow for
-population level inferences to be made using these data. However, a lack
-of repeated measures (\<10 per question) limited our ability to include
-Maternal ID as a random effect and Maternal ID was assumed ot be fixed.
-With each model type we began with all the predictor variables prior to
-using the backward and forward “Step” function to reduce the number of
-variables through elimination based on the p-values for Linear Models
-and AIC for GLM and GLMM. Once we had established the best fit model for
-both questions using AIC, the performance of the best models were tested
-using Cross Validation, question one using 7 folds and question two
-using 11 folds.
+can be found within the Vignettes in the STAT5620.Project package. These
+visualizations facilitated the exploration of variable distributions,
+specifically the response variables, and the apparent relationships
+between covariates and each response variable. From this it was
+determined that the response variables for both questions, Maternal Mass
+Change and Pup Weaning Mass, were Gaussian distributed. This normality
+allowed the exploration of the data through General Linear Models as
+well as more complex Generalized Linear Models and Mixed Models.
+Although our original analytical approach proposed the use of
+Generalized Linear Mixed Models, it felt prudent to explore the
+efficiency, interpretability and computational simplify of Linear Models
+if the assumption were met and the data suggested linearity.
+
+As a result, both questions were analysed first as Linear Models (LM),
+then as Generalized Linear Models (GLM) with Gaussian distributions, and
+finally as Generalized Linear Mixed Models (GLMM) with random effects
+and fixed effects of covariates. Initially, Maternal ID was to be
+included as a random effect to account for repeated measures, individual
+heterogeneity, and allow for population level inferences to be made
+using these data. However, a lack of repeated measures (\<10 per
+question) limited our ability to include Maternal ID as a random effect
+and Maternal ID was assumed to be fixed. For question one in particular,
+including a random slope for the effect of dominant prey species was
+explored due to the dominant prey species included in this data-set
+being a random draw from all possible prey species. However, the goal of
+this analysis was to explore the direct effect of each prey species on
+maternal mass gain, resulting in dominant prey species being included as
+a fixed effect in the final model. With each model type, we began with
+all the predictor variables prior to using the backward and forward
+“Step” function to reduce the number of variables through elimination
+based on the p-values for Linear Models and AIC for GLM and GLMM.
+
+Once we had established the best fit model for both questions using AIC,
+the performance of the best models were tested using Cross Validation,
+question one using 7 folds and question two using 11 folds. For question
+1, all modelling and cross-validation was performed using functions
+included in base R.
 
 # **Analysis**
 
-**Research Question 1:** Here we are exploring whether variation in diet
-influence maternal mass change over the foraging period leading up to
-parturition in Northwest Atlantic grey seals?
+### **Research Question 1:** Here we are exploring whether variation in diet influence maternal mass change over the foraging period leading up to parturition in Northwest Atlantic grey seals?
 
 The response variable of interest is maternal mass change. We will first
 look at the distribution of this variable:
 
 ```{r}
 #Load the data
-here::here("Processed_Data", "Data_Q1.csv")
 library(here)
-Data_Q1 <- read.csv(here("Processed_Data", "Data_Q1.csv"))
 library(readr)
+here::here("Processed_Data", "Data_Q1.csv")
+Data_Q1 <- read.csv(here("Processed_Data", "Data_Q1.csv"))
 #Data_Q1 <- read_csv("Processed_Data/Data_Q1.csv")
 View(Data_Q1)
 
@@ -326,7 +355,8 @@ However, none of the covariate values associated with this observation
 are abnormal and this point does not have high leverage. As a results,
 the decision is to retain this data point since it is not highly
 influential and knowledge of the system suggests it is a valid data
-point.
+point. Since the model residuals look good, there is no need to add
+complexity by using a different link function to generalize the model.
 
 We can now use step selection to preform repeated hypothesis tests for
 variable selection to determine which covariates best explain maternal
@@ -353,19 +383,73 @@ model output:
 summary(mom_mod2)
 ```
 
-While several years have mass change values that significantly differ
-from the expected mass change value, the effect of time is not of direct
-interest to our research question and is only present to account for
-changes in prey dynamics over time. As a result, the interpretation of
-this output is not relevant. However, we see that females who feed
-primarily on pollock experience lower mass change than the reference
-level, in this case being females who primarily feed on cod. Being an
-identity link function, the model is essentially a simple linear model
-and there is no transformations applied to the response variable. As
-such, coefficient estimates can be interpreted directly. In this case,
-individuals who feed on pollock experience 47.5% lower mass change than
-individuals who primarily feed on cod. This effect is presented in
-figure 1.
+*Cross validation* We can perform cross-validation to to test this
+models predictions. In order to have each fold represent about 10% of
+the data, we will perform 7 fold cross validation:
+
+```{r}
+set.seed(123)
+
+#Number of folds
+k <- 7
+
+# Split the data into folds
+DatCV <- Data_Q1 %>% mutate(fold = sample(rep(1:k, length.out = n())))
+
+# Create a vector to store RMSE for each fold
+rmse_values <- numeric(k)
+
+#Perform cross validation
+for (i in 1:k) {
+  train_data <- DatCV %>% filter(fold != i)
+  test_data  <- DatCV %>% filter(fold == i)
+  
+  # Fit the model on training data
+modCV <- glm(MassChange ~ DietDiv + Year + DomSpp, family = gaussian(link = "identity"), data = Data_Q1)
+  
+  # Predict on the test data
+  predictions <- predict(modCV, newdata = test_data)
+  
+  # Compute RMSE for this fold
+  actuals <- test_data$MassChange
+  rmse_values[i] <- sqrt(mean((predictions - actuals)^2))
+}
+
+rmse_values
+mean_rmse <- mean(rmse_values)
+cat("Average RMSE across", k, "folds:", round(mean_rmse, 2), "\n")
+```
+
+The average root mean squared error is 15.98, indicating the model
+generally predicts values within 16 kg of the true value.
+
+### 
+
+## Results:
+
+***Question1:*** **Does variation in diet influence maternal mass change
+over the foraging period leading up to parturition in Northwest Atlantic
+grey seals?**
+
+After using step selection methods to determine the best model using
+diet to explain variation in maternal mass change during the foraging
+period leading up to parturition, the lowest AIC model retains diet
+diversity, year, and dominant prey species as significant covariates.
+Looking at the summary output, even though several years have mass
+change values that significantly differ from the expected mass change
+value, the effect of time is not of direct interest to our research
+question and is only present to account for changes in prey dynamics
+over time. As a result, the interpretation of this output is not
+relevant. However, we see that females who feed primarily on pollock
+experience significantly lower (p\<0.05) mass change than the reference
+level, with the reference level in this case being females who primarily
+feed on cod. Being an identity link function, the model is essentially a
+simple linear model and there is no transformations applied to the
+response variable. As such, coefficient estimates can be interpreted
+directly. Individuals who feed on pollock experienced 47.5% lower mass
+change than individuals who primarily feed on cod, while females who fed
+primarily on redfish or sand lance experienced similar mass change to
+females who fed on cod. This effect is presented in figure 1.
 
 ```{r}
 ggplot(Data_Q1, aes(x = DomSpp, y = MassChange, fill = DomSpp)) +
@@ -397,52 +481,19 @@ It may also be worth noting that diet diversity is almost significant at
 p = 0.0556. While this p-value is not significant, the negative
 relationship between diet diversity and mass change may support the
 observed effects of dominant prey species, where individuals who
-primarily prey on cod, sand lance, or redfish and have a lower diet
-diversity due to this focus on a few profitable species are more
-successful in gaining mass than individuals who feed on a more diverse
-array of prey species which include less profitable species.
+primarily prey on cod, sand lance, or redfish are focusing efforts on
+these few profitable species, as reflected by more successful mass gain
+than individuals who feed on a more diverse array of prey species which
+include less profitable species. As a result, reduced diet diversity may
+reflect focus on highly profitable prey species and increased diet
+diversity may reflect a greater proportion of less profitable prey
+species.
 
-We can perform cross-validation to to test this models predictions. In
-order to have each fold represent about 10% of the data, we will perform
-7 fold cross validation:
-
-```{r}
-set.seed(123)
-
-#Number of folds
-k <- 7
-
-# Split the data into folds
-DatCV <- Data_Q1 %>% mutate(fold = sample(rep(1:k, length.out = n())))
-
-# Create a vector to store RMSE for each fold
-rmse_values <- numeric(k)
-
-#Perform cross validation
-for (i in 1:k) {
-  train_data <- DatCV %>% filter(fold != i)
-  test_data  <- DatCV %>% filter(fold == i)
-  
-  # Fit the model on training data
-modCV <- glm(MassChange ~ DietDiv + Year + DomSpp, family = gaussian(link = "identity"), data = Data_Q1)
-  
-  # Predict on the test data
-  predictions <- predict(modCV, newdata = test_data)
-  
-  # Compute RMSE for this fold
-  actuals <- test_data$MassChange
-  rmse_values[i] <- sqrt(mean((predictions - actuals)^2))
-}
-
-# Summarize
-rmse_values
-mean_rmse <- mean(rmse_values)
-cat("Average RMSE across", k, "folds:", round(mean_rmse, 2), "\n")
-```
-
-The average root mean squared error is 15.98, indicating the model
-generally predicts values within 16 kg of the true value. Check the
-standard deviation to compare the average RMSE to:
+Cross-validation was used to varify the predictive power of the final
+model. The average root mean squared error (RMSE) after 7-fold
+cross-validation is 15.98, indicating the model generally predicts
+values within 16 kg of the true value. We can check the standard
+deviation to compare the average RMSE to:
 
 ```{r}
 sd(Data_Q1$MassChange)
@@ -450,7 +501,7 @@ sd(Data_Q1$MassChange)
 
 Compared to the standard deviation of mass change, the RMSE value is
 about 40% lower than the standard deviation, meaning the model
-predictions are much better than using the population mean to predict
+predictions are better than using the population mean alone to predict
 mass change. However, compared to the overall mean mass change within
 our dataset (28.5 kg), there is relatively large prediction error. We
 can also visualize prediction accuracy with a fitted vs observed value
@@ -485,16 +536,81 @@ From this we can conclude that females who feed on redfish, sand lance,
 or cod experience greater mass change than individuals who feed on
 Pollock, but other factors outside of maternal diet, such as individual
 physiology or characteristics associated with individual foraging
-behavior, are responsible for explaining a large proportion of variation
-in maternal mass change.
+behavior, are likely responsible for explaining a large proportion of
+variation in maternal mass change.
 
-Research question 2:
+***Question 2:*** **Does female diet predict pup weaning mass in
+Northwest Atlantic grey seals?**
 
-### Results:
+Although it was proposed that many predictor variables (2 continuous + 3
+categorical for question one and 2 continuous + 5 categorical for
+question two) would allow greater computational potential to establish a
+well fit model, the added complexity of these variables was observed to
+significantly increase the AIC and potentially overfit the model. It was
+found, particularly in question two, that the simplicity of a Linear
+Model with a Least Square approach resulted in a simpler linear model
+with a significantly lower AIC.
 
-*Question1:*
+In question 2 it was found that best fit Linear Model for Pup Wean Mass
+included the predictor variables Dietary Energy Density and Diet
+Diversity with an AIC = 178.496. When a Generalized Linear Model was
+explored with a Gaussian Family and Identity Link Function it was also
+found that the best fit model included Dietary Energy Density and Diet
+Diversity predictor variable but the AIC was much less preferable at
+322.39. The reasons for this decreased predicted fit is likely based on
+the more complex Maximum Likelihood Estimation used in Generalized
+Linear Models rather than the Linear Least Square method used in the
+Linear Models. Generalized Linear Mixed Models (GLMM) were also explored
+using the Dominant Prey Species as the Cluster Variable because it was
+assumed that this variable would likely have a effect on the prey energy
+density as well as the diet diversity based on feeding location
+ecosystems. The best fit GLMM was found to include Diet Diversity and
+Dietary Energy Density as fixed effects predictor variables and Dominant
+Prey Species as an intercept random effect variable which had a AIC of
+324.3899. As a result it was determined that the best fit model to
+determine Pup Wean Mass was the Linear Model and this model was tested
+using Cross Validation. The correlation of predicted values to actual
+values showed a value of 0.6596914 meaning the Linear Model could be
+expected to predict Pup Wean Mass with about a 66 percent accuracy.
 
 ### **Conclusion:**
+
+In both question one, that explored the effect of diet on Maternal Mass
+Change, and question two, that explored the predictive ability of
+maternal diet on pup wean mass at partition, we found relatively large
+predictive errors in our models (cross-validation revealed RMSE of +/-
+16kg for question 1 and 33% for question two). Although the data-set
+provided many predictive variables, many of these were categorical data
+and only two, Dietary Energy Density and Diet Diversity, where numeric
+in nature. In addition to this the number of observation in the dataset
+were limited (question one n=76, and question two n=56) which resulted
+in many rows of data but few columns with ultimately resulted in added
+complexity in our models and the need to reduce the number of predictor
+variable to prevent overfitting the model.
+
+In question one the residuals suggest good model fit but the relatively
+large prediction error suggest the set of covariates used in this model
+are not sufficient in predicting maternal mass change or more
+observation would be required to fit a more reliable model. It was found
+from the data that females who fed on redfish, sand lance, or cod
+experience greater mass change than individuals who feed on Pollock, but
+other factors outside of maternal diet, such as individual physiology or
+characteristics associated with individual foraging behavior are likely
+responsible for a large proportion of variation in maternal mass change.
+Diet diversity appeared to have negative relationship with maternal mass
+change, possibly indicating a narrow diet focusing on more profitable
+prey species is beneficial in increasing mass gain, although these
+results were not quite statistically significant.
+
+In question two it was determined through both AIC and Cross Validation
+that the simpler Linear Model had a higher accuracy for predicting Pup
+Wean Mass with the two available numeric predictor variables. Access to
+additional observation could increase the predictive ability of the
+Linear Model as well as allow the fitting of more complex model such as
+a Mixed Model without overfitting. Although we feel the models provided
+fair accuracy in predicting Pup Wean Mass at partition, the lack of
+number of observations may have significantly impacted the reliability
+and validity of the statistical analysis.
 
 ### References:
 
